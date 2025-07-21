@@ -2,12 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './components/login/login.component';
 import { CaseWorklistComponent } from './components/case-worklist/case-worklist.component';
-import { ComplianceCheckerComponent } from './components/compliance-checker/compliance-checker.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, LoginComponent, CaseWorklistComponent, ComplianceCheckerComponent],
+  imports: [CommonModule, LoginComponent, CaseWorklistComponent],
   template: `
     <div class="min-h-screen bg-background" style="background-color: #fafbfc;">
       <!-- Login Screen -->
@@ -19,31 +18,29 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
       <!-- Main Application -->
       <div *ngIf="isLoggedIn" class="min-h-screen bg-background">
         <!-- Top Navigation Bar -->
-        <header class="bg-nav-bg border-b border-nav-border px-4 lg:px-6 py-3 shadow-sm" style="background-color: #ffffff; border-color: #e2e8f0;">
+        <header class="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 shadow-sm">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
               <!-- Mobile Menu Button -->
-              <div class="lg:hidden">
-                <button 
-                  class="p-2 rounded-md hover:bg-nav-hover"
-                  (click)="toggleMobileSidebar()"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                  </svg>
-                </button>
-              </div>
+              <button 
+                class="lg:hidden p-2 rounded-md hover:bg-gray-100 transition-colors"
+                (click)="toggleMobileSidebar()"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
 
               <!-- Logo and Title -->
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-info rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #2b6cb0 0%, #3182ce 100%);">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
                   <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h1 class="text-xl font-semibold text-foreground" style="color: #1a202c;">SmartCycleAI</h1>
-                  <p class="text-xs text-muted-foreground" style="color: #718096;">Clinical Documentation Intelligence</p>
+                  <h1 class="text-xl font-semibold text-gray-900">SmartCycleAI</h1>
+                  <p class="text-xs text-gray-500">Clinical Documentation Intelligence</p>
                 </div>
               </div>
             </div>
@@ -52,33 +49,31 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
             <div class="flex items-center gap-4">
               <!-- Search -->
               <div class="hidden md:flex relative">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #718096;">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
                 <input
                   type="text"
                   placeholder="Search cases, patients..."
-                  class="pl-10 pr-4 py-2 border border-border bg-input-background rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent"
-                  style="background-color: #f7fafc; border-color: #e2e8f0;"
+                  class="pl-10 pr-4 py-2 w-80 border border-gray-200 bg-gray-50 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 />
               </div>
 
               <!-- Notifications -->
-              <button class="relative p-2 hover:bg-nav-hover rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1.5-3s-1.62-1.5-3-1.5A2.5 2.5 0 003 9.5c0 1.38.5 2 1.5 3s1.62 1.5 3 1.5z"></path>
+              <button class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
                 </svg>
-                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-medical-primary text-white text-xs flex items-center justify-center" style="background-color: #2b6cb0;">3</span>
+                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-medium">3</span>
               </button>
 
               <!-- User Menu -->
               <div class="flex items-center gap-3">
                 <div class="text-right hidden sm:block">
-                  <p class="text-sm font-medium text-foreground" style="color: #1a202c;">Dr. Johnson</p>
-                  <p class="text-xs text-muted-foreground" style="color: #718096;">CDI Specialist</p>
+                  <p class="text-sm font-medium text-gray-900">Dr. Johnson</p>
+                  <p class="text-xs text-gray-500">CDI Specialist</p>
                 </div>
-                <div class="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-info rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #2b6cb0 0%, #3182ce 100%);">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
                   <span class="text-white text-sm font-medium">DJ</span>
                 </div>
               </div>
@@ -88,13 +83,18 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
 
         <div class="flex">
           <!-- Desktop Sidebar -->
-          <aside class="w-64 bg-nav-bg border-r border-nav-border hidden lg:block" style="background-color: #ffffff; border-color: #e2e8f0;">
+          <aside class="w-64 bg-white border-r border-gray-200 hidden lg:block">
             <!-- Navigation Items -->
             <div class="p-4 space-y-1">
               <div
                 *ngFor="let item of navigation"
-                [class]="'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 cursor-pointer group ' + (currentView === item.id ? 'bg-gradient-to-r from-medical-primary to-medical-info text-white shadow-lg' : 'text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-medical-primary')"
-                [style]="currentView === item.id ? 'background: linear-gradient(135deg, #2b6cb0 0%, #3182ce 100%); color: white; box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);' : 'color: #334155;'"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 cursor-pointer group"
+                [class.bg-blue-600]="currentView === item.id"
+                [class.text-white]="currentView === item.id"
+                [class.shadow-lg]="currentView === item.id"
+                [class.text-gray-700]="currentView !== item.id"
+                [class.hover:bg-blue-50]="currentView !== item.id"
+                [class.hover:text-blue-600]="currentView !== item.id"
                 (click)="setCurrentView(item.id)"
               >
                 <div class="w-5 h-5 flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
@@ -105,8 +105,7 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
                 <span class="flex-1 text-left font-medium">{{ item.name }}</span>
                 <span 
                   *ngIf="item.badge" 
-                  [class]="'text-xs px-2 py-0.5 rounded-full font-medium ' + (item.badge === 'New' ? 'bg-medical-info text-white' : 'bg-muted text-muted-foreground')"
-                  [style]="item.badge === 'New' ? 'background-color: #3182ce; color: white;' : 'background-color: #f0f4f8; color: #718096;'"
+                  class="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-600 text-white"
                 >
                   {{ item.badge }}
                 </span>
@@ -114,55 +113,54 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
             </div>
 
             <!-- Separator -->
-            <div class="mx-4 border-t" style="border-color: #e2e8f0;"></div>
+            <div class="mx-4 border-t border-gray-200"></div>
 
             <!-- Quick Stats -->
-            <div class="p-4 mx-4 mt-4 bg-content-secondary rounded-lg shadow-sm" style="background-color: #f7fafc;">
-              <h3 class="text-sm font-semibold text-foreground mb-3" style="color: #1a202c;">Today's Summary</h3>
+            <div class="p-4 mx-4 mt-4 bg-gray-50 rounded-lg shadow-sm">
+              <h3 class="text-sm font-semibold text-gray-900 mb-3">Today's Summary</h3>
               <div class="space-y-3">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-medical-info" style="background-color: #3182ce;"></div>
-                    <span class="text-sm text-muted-foreground" style="color: #718096;">Cases Reviewed</span>
+                    <div class="w-2 h-2 rounded-full bg-blue-600"></div>
+                    <span class="text-sm text-gray-600">Cases Reviewed</span>
                   </div>
-                  <span class="text-sm font-semibold text-foreground" style="color: #1a202c;">24</span>
+                  <span class="text-sm font-semibold text-gray-900">24</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-medical-warning" style="background-color: #dd6b20;"></div>
-                    <span class="text-sm text-muted-foreground" style="color: #718096;">Queries Sent</span>
+                    <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                    <span class="text-sm text-gray-600">Queries Sent</span>
                   </div>
-                  <span class="text-sm font-semibold text-foreground" style="color: #1a202c;">8</span>
+                  <span class="text-sm font-semibold text-gray-900">8</span>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-medical-secondary" style="background-color: #38a169;"></div>
-                    <span class="text-sm text-muted-foreground" style="color: #718096;">DRG Impact</span>
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="text-sm text-gray-600">DRG Impact</span>
                   </div>
-                  <span class="text-sm font-semibold text-medical-secondary" style="color: #38a169;">+$12.4K</span>
+                  <span class="text-sm font-semibold text-green-600">+$12.4K</span>
                 </div>
               </div>
             </div>
 
             <!-- Separator -->
-            <div class="mx-4 mt-4 border-t" style="border-color: #e2e8f0;"></div>
+            <div class="mx-4 mt-4 border-t border-gray-200"></div>
 
             <!-- User Profile Section -->
             <div class="p-4">
               <div class="flex items-center gap-3 mb-4">
-                <div class="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-info rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #2b6cb0 0%, #3182ce 100%);">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
                   <span class="text-white text-sm font-medium">DJ</span>
                 </div>
                 <div class="flex-1">
-                  <div class="text-sm font-medium text-foreground" style="color: #1a202c;">Dr. Johnson</div>
-                  <div class="text-xs text-muted-foreground" style="color: #718096;">CDI Specialist</div>
+                  <div class="text-sm font-medium text-gray-900">Dr. Johnson</div>
+                  <div class="text-xs text-gray-600">CDI Specialist</div>
                 </div>
               </div>
 
               <!-- Logout Button -->
               <button
-                class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-destructive hover:bg-medical-error-light transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                style="color: #e53e3e;"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-left text-red-600 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 (click)="handleLogout()"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -360,77 +358,88 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
                 </div>
               </div>
 
-              <!-- Metrics Cards -->
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Using real Card components from Figma design -->
-                <div class="bg-content-bg border border-border rounded-lg p-6 hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
-                  <div class="flex items-center justify-between mb-3">
-                    <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        <!-- Top Metrics Bar - Exactly as in Figma -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: Open Reviews -->
+            <div class="bg-content-bg border border-border rounded-lg hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-3">
+                  <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <span class="text-sm flex items-center text-muted-foreground" style="color: #718096;">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
                     </svg>
-                    <span class="text-sm flex items-center text-muted-foreground" style="color: #718096;">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-                      </svg>
-                      +5
-                    </span>
-                  </div>
-                  <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">47</div>
-                  <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">Open Reviews</div>
-                  <p class="text-xs text-muted-foreground" style="color: #718096;">Cases awaiting review</p>
+                    +5
+                  </span>
                 </div>
-
-                <div class="bg-content-bg border border-border rounded-lg p-6 hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
-                  <div class="flex items-center justify-between mb-3">
-                    <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="text-sm flex items-center text-muted-foreground" style="color: #718096;">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-                      </svg>
-                      +8
-                    </span>
-                  </div>
-                  <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">23</div>
-                  <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">Queries Sent (Pending Response)</div>
-                  <p class="text-xs text-muted-foreground" style="color: #718096;">Awaiting physician response</p>
-                </div>
-
-                <div class="bg-content-bg border border-border rounded-lg p-6 hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
-                  <div class="flex items-center justify-between mb-3">
-                    <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
-                    <span class="text-sm flex items-center text-medical-secondary" style="color: #38a169;">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-                      </svg>
-                      +12%
-                    </span>
-                  </div>
-                  <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">156</div>
-                  <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">DRG Changes this Month</div>
-                  <p class="text-xs text-muted-foreground" style="color: #718096;">Documentation improvements</p>
-                </div>
-
-                <div class="bg-content-bg border border-border rounded-lg p-6 hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
-                  <div class="flex items-center justify-between mb-3">
-                    <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                    </svg>
-                    <span class="text-sm flex items-center text-medical-secondary" style="color: #38a169;">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
-                      </svg>
-                      -3
-                    </span>
-                  </div>
-                  <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">8</div>
-                  <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">Denial Risk Cases</div>
-                  <p class="text-xs text-muted-foreground" style="color: #718096;">High risk for denial</p>
-                </div>
+                <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">47</div>
+                <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">Open Reviews</div>
+                <p class="text-xs text-muted-foreground" style="color: #718096;">Cases awaiting review</p>
               </div>
+            </div>
+
+            <!-- Card 2: Queries Sent -->
+            <div class="bg-content-bg border border-border rounded-lg hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-3">
+                  <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-sm flex items-center text-muted-foreground" style="color: #718096;">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +8
+                  </span>
+                </div>
+                <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">23</div>
+                <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">Queries Sent (Pending Response)</div>
+                <p class="text-xs text-muted-foreground" style="color: #718096;">Awaiting physician response</p>
+              </div>
+            </div>
+
+            <!-- Card 3: DRG Changes -->
+            <div class="bg-content-bg border border-border rounded-lg hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-3">
+                  <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                  </svg>
+                  <span class="text-sm flex items-center text-medical-secondary" style="color: #38a169;">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +12%
+                  </span>
+                </div>
+                <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">156</div>
+                <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">DRG Changes this Month</div>
+                <p class="text-xs text-muted-foreground" style="color: #718096;">Documentation improvements</p>
+              </div>
+            </div>
+
+            <!-- Card 4: Denial Risk Cases -->
+            <div class="bg-content-bg border border-border rounded-lg hover:shadow-md transition-shadow" style="background-color: #ffffff; border-color: #e2e8f0;">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-3">
+                  <svg class="w-6 h-6 text-medical-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #2b6cb0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                  </svg>
+                  <span class="text-sm flex items-center text-medical-secondary" style="color: #38a169;">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                    </svg>
+                    -3
+                  </span>
+                </div>
+                <div class="text-3xl font-bold text-foreground mb-1" style="color: #1a202c;">8</div>
+                <div class="text-sm font-medium text-foreground mb-1" style="color: #1a202c;">Denial Risk Cases</div>
+                <p class="text-xs text-muted-foreground" style="color: #718096;">High risk for denial</p>
+              </div>
+            </div>
+          </div>
 
               <!-- Charts Section -->
               <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -607,11 +616,8 @@ import { ComplianceCheckerComponent } from './components/compliance-checker/comp
             <!-- Case Worklist -->
             <app-case-worklist *ngIf="currentView === 'worklist'"></app-case-worklist>
 
-            <!-- Compliance Checker -->
-            <app-compliance-checker *ngIf="currentView === 'compliance-checker'"></app-compliance-checker>
-
             <!-- Other Views Placeholder -->
-            <div class="p-6" *ngIf="currentView !== 'dashboard' && currentView !== 'worklist' && currentView !== 'compliance-checker'">
+            <div class="p-6" *ngIf="currentView !== 'dashboard' && currentView !== 'worklist'">
               <div class="text-center py-12">
                 <h2 class="text-xl font-semibold text-foreground mb-2" style="color: #1a202c;">{{ getCurrentPageName() }}</h2>
                 <p class="text-muted-foreground" style="color: #718096;">This feature is coming soon...</p>

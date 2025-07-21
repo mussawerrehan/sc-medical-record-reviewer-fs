@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const winston = require('winston');
+const { sequelize } = require('./models/index');
 
 // Initialize Express app
 const app = express();
@@ -38,13 +38,22 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/claims_db')
-  .then(() => logger.info('Connected to MongoDB'))
-  .catch(err => logger.error('MongoDB connection error:', err));
+// Connect to Database using Sequelize
+sequelize.authenticate()
+  .then(() => {
+    logger.info('Database connection established successfully');
+    return sequelize.sync({ alter: false }); // Don't force recreate tables
+  })
+  .then(() => {
+    logger.info('Database synchronized');
+  })
+  .catch(err => {
+    logger.error('Database connection error:', err);
+  });
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/cases', require('./routes/cases.routes'));
 app.use('/api/claims', require('./routes/claims.routes'));
 app.use('/api/users', require('./routes/users.routes'));
 app.use('/api/hospitals', require('./routes/hospitals.routes'));

@@ -1,117 +1,118 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface CaseFlag {
-  type: 'clinical' | 'coding' | 'compliance';
-  text: string;
-  severity: 'high' | 'medium' | 'low';
-}
-
-interface CaseItem {
-  id: string;
-  patient: string;
-  mrn: string;
-  age: number;
-  sex: string;
-  admitDate: string;
-  los: number;
-  primaryDiagnosis: string;
-  currentDrg: string;
-  suggestedDrg: string;
-  flags: CaseFlag[];
-  priority: 'High' | 'Medium' | 'Low';
-  impact: string;
-  assignedTo: string;
-  status: 'New' | 'In Progress' | 'Query Sent' | 'Resolved';
-  unit: string;
-}
+import { CasesService, Case, CaseFilters } from '../../services/cases.service';
+import { CaseDetailsComponent } from '../case-details/case-details.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-case-worklist',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CaseDetailsComponent],
   template: `
-    <div class="p-6 space-y-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
+    <!-- Case Details View -->
+    <app-case-details 
+      *ngIf="selectedCaseId" 
+      [caseId]="selectedCaseId"
+      (back)="closeDetails()">
+    </app-case-details>
+
+    <!-- Case List View -->
+    <div *ngIf="!selectedCaseId" class="p-6 space-y-6">
+      <!-- Header and Search -->
+      <div class="flex flex-col lg:flex-row gap-4 justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-foreground">Case Worklist</h1>
-          <p class="text-muted-foreground mt-1">Review cases requiring documentation improvement</p>
+          <h1 class="text-2xl font-semibold text-foreground" style="color: #1a202c;">Case Review Worklist</h1>
+          <p class="text-muted-foreground" style="color: #718096;">
+            {{ filteredCases.length }} cases requiring review
+          </p>
         </div>
-        <div class="flex items-center gap-3">
-          <button 
-            class="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm hover:bg-muted"
+        
+        <div class="flex gap-2">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #718096;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by patient, MRN, or diagnosis..."
+              [(ngModel)]="searchTerm"
+              (input)="filterCases()"
+              class="pl-10 pr-4 py-2 border border-border bg-content-bg rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent w-80"
+              style="background-color: #ffffff; border-color: #e2e8f0;"
+            />
+          </div>
+          <button
             (click)="toggleFilters()"
+            class="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm hover:bg-muted transition-colors"
+            style="border-color: #e2e8f0;"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
             </svg>
             Filters
           </button>
-          <button class="flex items-center gap-2 px-4 py-2 bg-medical-primary text-white rounded-md hover:bg-medical-primary/90">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            New Case
-          </button>
         </div>
       </div>
 
-      <!-- Search and Filters -->
-      <div class="medical-card p-4">
-        <div class="flex items-center gap-4 mb-4">
-          <div class="flex-1 relative">
-            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <input
-              type="text"
-              placeholder="Search by patient name, MRN, or diagnosis..."
-              [(ngModel)]="searchTerm"
-              class="pl-10 pr-4 py-2 w-full border border-border bg-input-background rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent"
-            />
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground">{{ filteredCases.length }} cases</span>
-          </div>
-        </div>
-
-        <!-- Filters Row -->
-        <div *ngIf="showFilters" class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-border">
-          <div>
-            <label class="block text-sm font-medium text-foreground mb-1">Priority</label>
-            <select [(ngModel)]="priorityFilter" class="w-full px-3 py-2 border border-border rounded-md text-sm bg-card">
+      <!-- Filters Panel -->
+      <div *ngIf="showFilters" class="bg-content-bg border border-border rounded-lg p-6" style="background-color: #ffffff; border-color: #e2e8f0;">
+        <h3 class="text-lg font-medium text-foreground mb-4" style="color: #1a202c;">Filter Cases</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground" style="color: #1a202c;">Priority</label>
+            <select 
+              [(ngModel)]="priorityFilter" 
+              (change)="filterCases()"
+              class="w-full px-3 py-2 border border-border bg-content-bg rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary"
+              style="background-color: #ffffff; border-color: #e2e8f0;"
+            >
               <option value="all">All Priorities</option>
-              <option value="High">High Priority</option>
-              <option value="Medium">Medium Priority</option>
-              <option value="Low">Low Priority</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
             </select>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-foreground mb-1">Status</label>
-            <select [(ngModel)]="statusFilter" class="w-full px-3 py-2 border border-border rounded-md text-sm bg-card">
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground" style="color: #1a202c;">Status</label>
+            <select 
+              [(ngModel)]="statusFilter" 
+              (change)="filterCases()"
+              class="w-full px-3 py-2 border border-border bg-content-bg rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary"
+              style="background-color: #ffffff; border-color: #e2e8f0;"
+            >
               <option value="all">All Statuses</option>
-              <option value="New">New</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Query Sent">Query Sent</option>
-              <option value="Resolved">Resolved</option>
+              <option value="new">New</option>
+              <option value="in-progress">In Progress</option>
+              <option value="query-sent">Query Sent</option>
+              <option value="completed">Completed</option>
             </select>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-foreground mb-1">Unit</label>
-            <select [(ngModel)]="unitFilter" class="w-full px-3 py-2 border border-border rounded-md text-sm bg-card">
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-foreground" style="color: #1a202c;">Unit</label>
+            <select 
+              [(ngModel)]="unitFilter" 
+              (change)="filterCases()"
+              class="w-full px-3 py-2 border border-border bg-content-bg rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary"
+              style="background-color: #ffffff; border-color: #e2e8f0;"
+            >
               <option value="all">All Units</option>
-              <option value="ICU">ICU</option>
-              <option value="Medicine">Medicine</option>
-              <option value="Surgery">Surgery</option>
-              <option value="Emergency">Emergency</option>
+              <option value="icu">ICU</option>
+              <option value="medicine">Medicine</option>
+              <option value="cardiology">Cardiology</option>
+              <option value="pulmonology">Pulmonology</option>
+              <option value="neurology">Neurology</option>
+              <option value="endocrinology">Endocrinology</option>
             </select>
           </div>
+
           <div class="flex items-end">
-            <button 
-              class="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted"
+            <button
               (click)="clearFilters()"
+              class="w-full px-4 py-2 border border-border rounded-md text-sm hover:bg-muted transition-colors"
+              style="border-color: #e2e8f0;"
             >
               Clear Filters
             </button>
@@ -120,75 +121,119 @@ interface CaseItem {
       </div>
 
       <!-- Cases Table -->
-      <div class="medical-card overflow-hidden">
+      <div class="bg-content-bg border border-border rounded-lg overflow-hidden" style="background-color: #ffffff; border-color: #e2e8f0;">
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-muted">
+            <thead class="bg-muted border-b border-border" style="background-color: #f7fafc; border-color: #e2e8f0;">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Patient</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Diagnosis</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">DRG Info</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Flags</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Priority</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Impact</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Patient</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Admit Date / LOS</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Primary Diagnosis</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">DRG Impact</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Issues</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Priority</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Status</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Assigned To</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-foreground" style="color: #1a202c;">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-border">
-              <tr *ngFor="let case of filteredCases" class="hover:bg-muted/50">
+            <tbody>
+              <tr 
+                *ngFor="let case of filteredCases" 
+                class="border-b border-border hover:bg-muted/50 cursor-pointer transition-colors"
+                style="border-color: #e2e8f0;"
+                (click)="viewCase(case.id)"
+              >
+                                  <td class="px-4 py-4">
+                    <div>
+                      <div class="font-medium text-foreground" style="color: #1a202c;">{{ case.patientName }}</div>
+                      <div class="text-sm text-muted-foreground" style="color: #718096;">
+                        {{ case.age }}/{{ case.sex }} • MRN: {{ case.mrn }}
+                      </div>
+                    </div>
+                  </td>
+                
                 <td class="px-4 py-4">
-                  <div>
-                    <div class="text-sm font-medium text-foreground">{{ case.patient }}</div>
-                    <div class="text-xs text-muted-foreground">MRN: {{ case.mrn }}</div>
-                    <div class="text-xs text-muted-foreground">{{ case.age }}{{ case.sex }} • LOS: {{ case.los }}d</div>
-                  </div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="text-sm text-foreground">{{ case.primaryDiagnosis }}</div>
-                  <div class="text-xs text-muted-foreground">Admit: {{ formatDate(case.admitDate) }}</div>
-                  <div class="text-xs text-muted-foreground">{{ case.unit }}</div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="text-xs">
-                    <div class="text-muted-foreground">Current: <span class="font-medium">{{ case.currentDrg }}</span></div>
-                    <div class="text-medical-secondary">Suggested: <span class="font-medium">{{ case.suggestedDrg }}</span></div>
-                  </div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="space-y-1">
-                    <div *ngFor="let flag of case.flags" 
-                         [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs ' + getFlagClass(flag.severity)">
-                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path [attr.d]="getFlagIcon(flag.type)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                      </svg>
-                      {{ flag.text }}
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #718096;">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <div>
+                      <div class="text-sm text-foreground" style="color: #1a202c;">{{ case.admitDate }}</div>
+                      <div class="text-xs text-muted-foreground" style="color: #718096;">
+                        {{ case.lengthOfStay }} days
+                      </div>
                     </div>
                   </div>
                 </td>
+                
                 <td class="px-4 py-4">
-                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getPriorityClass(case.priority)">
-                    {{ case.priority }}
-                  </span>
+                  <div>
+                    <div class="text-sm text-foreground" style="color: #1a202c;">{{ case.primaryDiagnosis }}</div>
+                    <div class="text-xs text-muted-foreground" style="color: #718096;">
+                      {{ case.unit }}
+                    </div>
+                  </div>
                 </td>
+                
                 <td class="px-4 py-4">
-                  <div class="text-sm font-medium text-medical-secondary">{{ case.impact }}</div>
+                  <div>
+                    <div class="text-sm text-foreground" style="color: #1a202c;">
+                      {{ case.currentDrg }} → {{ case.suggestedDrg }}
+                    </div>
+                                         <div class="text-sm font-medium text-medical-secondary" style="color: #38a169;">
+                       {{ case.formattedImpact || ('+$' + (case.financialImpact || 0).toLocaleString()) }}
+                     </div>
+                  </div>
                 </td>
+                
                 <td class="px-4 py-4">
-                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getStatusClass(case.status)">
-                    {{ case.status }}
-                  </span>
+                  <div class="space-y-1">
+                    <div *ngFor="let flag of case.flags" class="flex items-center gap-2 text-xs">
+                      <div [ngSwitch]="flag.type">
+                        <svg *ngSwitchCase="'clinical'" class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <svg *ngSwitchCase="'coding'" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                        <svg *ngSwitchCase="'compliance'" class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                      </div>
+                      <span [class]="getFlagSeverityClass(flag.severity)">
+                        {{ flag.text }}
+                      </span>
+                    </div>
+                  </div>
                 </td>
+                
                 <td class="px-4 py-4">
-                  <button 
-                    class="inline-flex items-center px-3 py-1 text-xs bg-medical-primary text-white rounded-md hover:bg-medical-primary/90"
-                    (click)="viewCase(case.id)"
+                  <span [class]="getPriorityBadgeClass(case.priority)">{{ case.priority }}</span>
+                </td>
+                
+                <td class="px-4 py-4">
+                  <span [class]="getStatusBadgeClass(case.status)">{{ case.status }}</span>
+                </td>
+                
+                <td class="px-4 py-4">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #718096;">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-sm text-foreground" style="color: #1a202c;">{{ case.assignedTo }}</span>
+                  </div>
+                </td>
+                
+                <td class="px-4 py-4">
+                  <button
+                    (click)="viewCase(case.id); $event.stopPropagation()"
+                    class="p-2 hover:bg-muted rounded-md transition-colors"
                   >
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    Review
                   </button>
                 </td>
               </tr>
@@ -199,24 +244,21 @@ interface CaseItem {
 
       <!-- Pagination -->
       <div class="flex items-center justify-between">
-        <div class="text-sm text-muted-foreground">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ getEndIndex() }} of {{ filteredCases.length }} cases
+        <div class="text-sm text-muted-foreground" style="color: #718096;">
+          Showing {{ filteredCases.length }} of {{ allCases.length }} cases
         </div>
         <div class="flex items-center gap-2">
-          <button 
-            class="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50"
-            [disabled]="currentPage === 1"
-            (click)="previousPage()"
-          >
+          <button class="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm bg-muted cursor-not-allowed" disabled style="border-color: #e2e8f0; background-color: #f7fafc;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
             Previous
           </button>
-          <span class="text-sm text-muted-foreground">Page {{ currentPage }} of {{ totalPages }}</span>
-          <button 
-            class="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50"
-            [disabled]="currentPage === totalPages"
-            (click)="nextPage()"
-          >
+          <button class="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm hover:bg-muted transition-colors" style="border-color: #e2e8f0;">
             Next
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
           </button>
         </div>
       </div>
@@ -225,199 +267,198 @@ interface CaseItem {
   styles: [`
     .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem; }
     .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+    .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
     .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.25rem; }
     .gap-2 { gap: 0.5rem; }
-    .gap-3 { gap: 0.75rem; }
     .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .w-80 { width: 20rem; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .p-2 { padding: 0.5rem; }
+    .p-4 { padding: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .pl-10 { padding-left: 2.5rem; }
+    .pr-4 { padding-right: 1rem; }
+    .mb-4 { margin-bottom: 1rem; }
     .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .divide-y > :not([hidden]) ~ :not([hidden]) { border-top-width: 1px; }
-    .divide-border > :not([hidden]) ~ :not([hidden]) { border-color: var(--border); }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .cursor-pointer { cursor: pointer; }
+    .cursor-not-allowed { cursor: not-allowed; }
+    .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; }
+    
     @media (min-width: 768px) {
       .md\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
+    
+    @media (min-width: 1024px) {
+      .lg\\:flex-row { flex-direction: row; }
+    }
   `]
 })
-export class CaseWorklistComponent implements OnInit {
+export class CaseWorklistComponent implements OnInit, OnDestroy {
   searchTerm = '';
   priorityFilter = 'all';
   statusFilter = 'all';
   unitFilter = 'all';
   showFilters = false;
-  currentPage = 1;
-  pageSize = 10;
+  filteredCases: Case[] = [];
+  allCases: Case[] = [];
+  selectedCaseId: string | null = null;
+  loading = false;
+  pagination = {
+    total: 0,
+    page: 1,
+    limit: 50,
+    totalPages: 0
+  };
+  
+  private subscriptions = new Subscription();
 
-  cases: CaseItem[] = [
-    {
-      id: 'MR-2024-001234',
-      patient: 'Sarah Martinez',
-      mrn: '123456789',
-      age: 67,
-      sex: 'F',
-      admitDate: '2024-07-05',
-      los: 3,
-      primaryDiagnosis: 'Pneumonia with Sepsis',
-      currentDrg: 'DRG 871',
-      suggestedDrg: 'DRG 870',
-      flags: [
-        { type: 'clinical', text: 'Sepsis criteria not documented', severity: 'high' },
-        { type: 'coding', text: 'MCC coding opportunity', severity: 'high' }
-      ],
-      priority: 'High',
-      impact: '+$2,400',
-      assignedTo: 'Dr. Johnson',
-      status: 'New',
-      unit: 'ICU'
-    },
-    {
-      id: 'MR-2024-001235',
-      patient: 'Robert Chen',
-      mrn: '123456790',
-      age: 72,
-      sex: 'M',
-      admitDate: '2024-07-04',
-      los: 4,
-      primaryDiagnosis: 'Acute Kidney Injury',
-      currentDrg: 'DRG 682',
-      suggestedDrg: 'DRG 681',
-      flags: [
-        { type: 'clinical', text: 'AKI severity not specified', severity: 'high' },
-        { type: 'compliance', text: 'POA indicator missing', severity: 'medium' }
-      ],
-      priority: 'High',
-      impact: '+$1,800',
-      assignedTo: 'Dr. Johnson',
-      status: 'In Progress',
-      unit: 'Medicine'
-    },
-    {
-      id: 'MR-2024-001236',
-      patient: 'Maria Rodriguez',
-      mrn: '123456791',
-      age: 58,
-      sex: 'F',
-      admitDate: '2024-07-06',
-      los: 2,
-      primaryDiagnosis: 'Heart Failure',
-      currentDrg: 'DRG 293',
-      suggestedDrg: 'DRG 291',
-      flags: [
-        { type: 'clinical', text: 'Ejection fraction not documented', severity: 'medium' }
-      ],
-      priority: 'Medium',
-      impact: '+$1,200',
-      assignedTo: 'Dr. Smith',
-      status: 'Query Sent',
-      unit: 'Medicine'
-    }
-  ];
+  constructor(private casesService: CasesService) {}
 
-  ngOnInit() {}
 
-  get filteredCases(): CaseItem[] {
-    let filtered = this.cases;
 
-    // Search filter
-    if (this.searchTerm) {
-      filtered = filtered.filter(c => 
-        c.patient.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        c.mrn.includes(this.searchTerm) ||
-        c.primaryDiagnosis.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
-    }
+  ngOnInit() {
+    this.loadCases();
+    
+    // Subscribe to cases$ observable
+    this.subscriptions.add(
+      this.casesService.cases$.subscribe(cases => {
+        this.allCases = cases;
+        this.filterCases();
+      })
+    );
 
-    // Priority filter
-    if (this.priorityFilter !== 'all') {
-      filtered = filtered.filter(c => c.priority === this.priorityFilter);
-    }
-
-    // Status filter
-    if (this.statusFilter !== 'all') {
-      filtered = filtered.filter(c => c.status === this.statusFilter);
-    }
-
-    // Unit filter
-    if (this.unitFilter !== 'all') {
-      filtered = filtered.filter(c => c.unit === this.unitFilter);
-    }
-
-    return filtered;
+    // Subscribe to loading$ observable
+    this.subscriptions.add(
+      this.casesService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.filteredCases.length / this.pageSize);
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
-  getEndIndex(): number {
-    return Math.min(this.currentPage * this.pageSize, this.filteredCases.length);
+  loadCases() {
+    const filters: CaseFilters = {
+      page: this.pagination.page,
+      limit: this.pagination.limit,
+      search: this.searchTerm || undefined,
+      priority: this.priorityFilter !== 'all' ? this.priorityFilter : undefined,
+      status: this.statusFilter !== 'all' ? this.statusFilter : undefined,
+      unit: this.unitFilter !== 'all' ? this.unitFilter : undefined
+    };
+
+    this.casesService.getCases(filters).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.pagination = response.data.pagination;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading cases:', error);
+        // Use empty array as fallback
+        this.allCases = [];
+        this.filteredCases = [];
+      }
+    });
   }
 
-  toggleFilters(): void {
+  toggleFilters() {
     this.showFilters = !this.showFilters;
   }
 
-  clearFilters(): void {
+  filterCases() {
+    if (this.allCases.length === 0) {
+      this.filteredCases = [];
+      return;
+    }
+
+    this.filteredCases = this.allCases.filter(case_item => {
+      const matchesSearch = case_item.patientName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                           case_item.mrn.includes(this.searchTerm) ||
+                           case_item.primaryDiagnosis.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesPriority = this.priorityFilter === 'all' || case_item.priority.toLowerCase() === this.priorityFilter;
+      const matchesStatus = this.statusFilter === 'all' || case_item.status.toLowerCase().replace(' ', '-') === this.statusFilter;
+      const matchesUnit = this.unitFilter === 'all' || case_item.unit.toLowerCase() === this.unitFilter;
+
+      return matchesSearch && matchesPriority && matchesStatus && matchesUnit;
+    });
+  }
+
+  clearFilters() {
     this.priorityFilter = 'all';
     this.statusFilter = 'all';
     this.unitFilter = 'all';
     this.searchTerm = '';
+    this.filteredCases = [...this.allCases];
   }
 
-  viewCase(caseId: string): void {
-    console.log('Viewing case:', caseId);
-    // Navigate to case review
+  viewCase(caseId: string) {
+    this.selectedCaseId = caseId;
   }
 
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString();
+  closeDetails() {
+    this.selectedCaseId = null;
   }
 
-  getPriorityClass(priority: string): string {
+  getPriorityBadgeClass(priority: string): string {
     switch (priority) {
-      case 'High': return 'bg-medical-error text-white';
-      case 'Medium': return 'bg-medical-warning text-white';
-      case 'Low': return 'bg-medical-info text-white';
-      default: return 'bg-muted text-muted-foreground';
+      case 'High':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800';
+      case 'Medium':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800';
+      case 'Low':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800';
+      default:
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800';
     }
   }
 
-  getStatusClass(status: string): string {
+  getStatusBadgeClass(status: string): string {
     switch (status) {
-      case 'New': return 'bg-medical-info text-white';
-      case 'In Progress': return 'bg-medical-warning text-white';
-      case 'Query Sent': return 'bg-medical-secondary text-white';
-      case 'Resolved': return 'bg-medical-success text-white';
-      default: return 'bg-muted text-muted-foreground';
+      case 'New':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800';
+      case 'In Progress':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800';
+      case 'Query Sent':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800';
+      case 'Completed':
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800';
+      default:
+        return 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800';
     }
   }
 
-  getFlagClass(severity: string): string {
+  getFlagSeverityClass(severity: string): string {
     switch (severity) {
-      case 'high': return 'bg-medical-error-light text-medical-error';
-      case 'medium': return 'bg-medical-warning-light text-medical-warning';
-      case 'low': return 'bg-medical-info-light text-medical-info';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  }
-
-  getFlagIcon(type: string): string {
-    switch (type) {
-      case 'clinical': return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-      case 'coding': return 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z';
-      case 'compliance': return 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z';
-      default: return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
-    }
-  }
-
-  previousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+      case 'high':
+        return 'text-red-600';
+      case 'medium':
+        return 'text-orange-600';
+      case 'low':
+        return 'text-gray-600';
+      default:
+        return 'text-gray-600';
     }
   }
 } 

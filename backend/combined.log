@@ -28,3 +28,6 @@
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-07-21T12:18:53.308Z"}
 {"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T12:51:53.534Z"}
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-07-21T12:51:54.447Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T19:21:14.701Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T19:21:14.706Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T19:21:14.707Z"}
