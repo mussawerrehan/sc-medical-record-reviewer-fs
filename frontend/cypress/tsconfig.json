@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["**/*.ts"],
+  "compilerOptions": {
+    "sourceMap": false,
+    "types": ["cypress", "node", "mocha"],
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "baseUrl": "..",
+    "paths": {
+      "@app/*": ["src/app/*"]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "871": "Septicemia or severe sepsis without mechanical ventilation 96+ hours with MCC",
+  "872": "Septicemia or severe sepsis without mechanical ventilation 96+ hours without MCC",
+  "291": "Heart failure and shock with MCC",
+  "292": "Heart failure and shock with CC",
+  "293": "Heart failure and shock without CC/MCC",
+  "190": "Chronic obstructive pulmonary disease with MCC",
+  "191": "Chronic obstructive pulmonary disease with CC",
+  "192": "Chronic obstructive pulmonary disease without CC/MCC",
+  "470": "Major joint replacement or reattachment of lower extremity without MCC",
+  "469": "Major joint replacement or reattachment of lower extremity with MCC",
+  "003": "ECMO or tracheostomy with mechanical ventilation 96+ hours",
+  "004": "Tracheostomy with mechanical ventilation 96+ hours or principal diagnosis except face, mouth and neck without major O.R. procedure",
+  "207": "Respiratory system diagnosis with ventilator support 96+ hours",
+  "208": "Respiratory system diagnosis with ventilator support ≤ 96 hours",
+  "870": "Septicemia or severe sepsis with mechanical ventilation 96+ hours"
+} 

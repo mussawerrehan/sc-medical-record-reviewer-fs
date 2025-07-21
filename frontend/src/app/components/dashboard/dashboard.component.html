@@ -1,0 +1,51 @@
+<div class="dashboard-container" *ngIf="currentUser$ | async as user">
+  <h1>Welcome, {{ user.name }}!</h1>
+
+  <div class="dashboard-cards">
+    <mat-card class="dashboard-card" (click)="navigateTo('/claims')">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>description</mat-icon>
+        <mat-card-title>Claims</mat-card-title>
+        <mat-card-subtitle>Manage Claims</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Create, view, and manage claims</p>
+      </mat-card-content>
+    </mat-card>
+
+    <ng-container *ngIf="user.role === UserRole.SUPER_ADMIN || user.role === UserRole.HOSPITAL_ADMIN">
+      <mat-card class="dashboard-card" (click)="navigateTo('/hospitals')">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>local_hospital</mat-icon>
+          <mat-card-title>Hospitals</mat-card-title>
+          <mat-card-subtitle>Manage Hospitals</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>View and manage hospital information</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard-card" (click)="navigateTo('/providers')">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>people</mat-icon>
+          <mat-card-title>Providers</mat-card-title>
+          <mat-card-subtitle>Manage Providers</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>View and manage provider information</p>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+
+    <mat-card class="dashboard-card" (click)="navigateTo('/profile')">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>person</mat-icon>
+        <mat-card-title>Profile</mat-card-title>
+        <mat-card-subtitle>Manage Profile</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>View and update your profile</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 

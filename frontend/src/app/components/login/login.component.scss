@@ -1,0 +1,117 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(to bottom right, #EBF3FE, #F7F9FC);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.icon-container {
+  width: 64px;
+  height: 64px;
+  background-color: #1A73E8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+
+  mat-icon {
+    color: white;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+mat-card-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+mat-card-title {
+  font-size: 24px;
+  margin-bottom: 0.5rem;
+}
+
+mat-card-subtitle {
+  text-align: center;
+  line-height: 1.5;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.facility-option {
+  display: flex;
+  flex-direction: column;
+
+  .facility-name {
+    font-weight: 500;
+  }
+
+  .facility-location {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-bottom: 1rem;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.demo-credentials {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  margin: 1rem 0;
+}
+
+.hipaa-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+  .hipaa-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+button[type="submit"] {
+  height: 48px;
+} 

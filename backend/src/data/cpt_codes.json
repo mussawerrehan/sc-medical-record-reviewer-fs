@@ -1,0 +1,77 @@
+{
+  "99213": {
+    "description": "Office or other outpatient visit, established patient, 20-29 minutes",
+    "category": "Evaluation and Management",
+    "fee": 92.47
+  },
+  "99214": {
+    "description": "Office or other outpatient visit, established patient, 30-39 minutes",
+    "category": "Evaluation and Management",
+    "fee": 131.20
+  },
+  "99215": {
+    "description": "Office or other outpatient visit, established patient, 40-54 minutes",
+    "category": "Evaluation and Management",
+    "fee": 183.19
+  },
+  "99203": {
+    "description": "Office or other outpatient visit, new patient, 30-44 minutes",
+    "category": "Evaluation and Management",
+    "fee": 132.09
+  },
+  "99204": {
+    "description": "Office or other outpatient visit, new patient, 45-59 minutes",
+    "category": "Evaluation and Management",
+    "fee": 199.43
+  },
+  "99205": {
+    "description": "Office or other outpatient visit, new patient, 60-74 minutes",
+    "category": "Evaluation and Management",
+    "fee": 264.94
+  },
+  "99285": {
+    "description": "Emergency department visit, high severity and threat to life or physiologic function",
+    "category": "Emergency Department",
+    "fee": 176.78
+  },
+  "99284": {
+    "description": "Emergency department visit, high severity and urgent evaluation",
+    "category": "Emergency Department",
+    "fee": 112.92
+  },
+  "27447": {
+    "description": "Total knee arthroplasty",
+    "category": "Surgery",
+    "fee": 1407.72
+  },
+  "27130": {
+    "description": "Total hip arthroplasty",
+    "category": "Surgery",
+    "fee": 1378.54
+  },
+  "47562": {
+    "description": "Laparoscopic cholecystectomy",
+    "category": "Surgery",
+    "fee": 674.63
+  },
+  "43239": {
+    "description": "Upper GI endoscopy, biopsy",
+    "category": "Endoscopy",
+    "fee": 302.77
+  },
+  "45380": {
+    "description": "Colonoscopy with biopsy",
+    "category": "Endoscopy",
+    "fee": 379.68
+  },
+  "71045": {
+    "description": "X-ray exam chest single view",
+    "category": "Radiology",
+    "fee": 23.03
+  },
+  "71046": {
+    "description": "X-ray exam chest 2 views",
+    "category": "Radiology",
+    "fee": 29.54
+  }
+} 

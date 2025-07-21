@@ -1,0 +1,103 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <!-- Facility Selection Step -->
+    <div *ngIf="currentStep === 'facility'">
+      <mat-card-header>
+        <div class="icon-container">
+          <mat-icon class="facility-icon">business</mat-icon>
+        </div>
+        <mat-card-title>Select Facility</mat-card-title>
+        <mat-card-subtitle>Choose the healthcare facility you want to access</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="facilityForm" (ngSubmit)="onFacilitySelection()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Healthcare Facility</mat-label>
+            <mat-select formControlName="facility">
+              <mat-option *ngFor="let facility of facilities" [value]="facility.id">
+                <div class="facility-option">
+                  <span class="facility-name">{{facility.name}}</span>
+                  <span class="facility-location">{{facility.location}}</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="facilityForm.get('facility')?.hasError('required')">
+              Please select a facility
+            </mat-error>
+          </mat-form-field>
+
+          <div class="error-message" *ngIf="error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{error}}</span>
+          </div>
+
+          <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">Continue to SmartCycleAI</span>
+          </button>
+
+          <button mat-stroked-button class="full-width mt-3" (click)="backToLogin()" type="button" [disabled]="isLoading">
+            Back to Login
+          </button>
+        </form>
+      </mat-card-content>
+    </div>
+
+    <!-- Login Step -->
+    <div *ngIf="currentStep === 'login'">
+      <mat-card-header>
+        <div class="icon-container">
+          <mat-icon class="shield-icon">security</mat-icon>
+        </div>
+        <mat-card-title>SmartCycleAI</mat-card-title>
+        <mat-card-subtitle>
+          Medical Record Review System
+          <br>
+          Please sign in to continue
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="username" placeholder="Enter your email" type="email">
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="loginForm.get('username')?.touched">
+              {{getErrorMessage('username')}}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" placeholder="Enter your password">
+            <mat-icon matSuffix>lock</mat-icon>
+            <mat-error *ngIf="loginForm.get('password')?.touched">
+              {{getErrorMessage('password')}}
+            </mat-error>
+          </mat-form-field>
+
+          <div class="error-message" *ngIf="error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{error}}</span>
+          </div>
+
+          <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">Sign In</span>
+          </button>
+
+          <div class="demo-credentials">
+            Demo credentials: demo@smartcycle.ai / SmartCyclePass
+          </div>
+
+          <div class="hipaa-notice">
+            <mat-icon class="hipaa-icon">security</mat-icon>
+            HIPAA Compliant & Secure
+          </div>
+        </form>
+      </mat-card-content>
+    </div>
+  </mat-card>
+</div> 
