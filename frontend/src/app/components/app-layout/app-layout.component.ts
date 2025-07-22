@@ -66,6 +66,14 @@ export class AppLayoutComponent implements OnInit {
       badge: '23'
     },
     {
+      id: 'query-generator',
+      name: 'Query Generator',
+      route: '/query-generator',
+      icon: 'message',
+      description: 'Generate clinical documentation queries',
+      badge: null
+    },
+    {
       id: 'compliance-checker',
       name: 'Compliance Checker',
       route: '/compliance',

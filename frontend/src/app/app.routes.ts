@@ -26,7 +26,14 @@ export const routes: Routes = [
   {
     path: 'compliance',
     loadComponent: () => import('./components/compliance-checker/compliance-checker.component').then(m => m.ComplianceCheckerComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { title: 'Compliance Checker' }
+  },
+  {
+    path: 'query-generator',
+    loadComponent: () => import('./components/query-generator/query-generator.component').then(m => m.QueryGeneratorComponent),
+    canActivate: [AuthGuard],
+    data: { title: 'Query Generator' }
   },
   {
     path: 'analytics',
@@ -78,12 +85,6 @@ export const routes: Routes = [
     loadComponent: () => import('./components/batch-monitoring/batch-monitoring.component').then(m => m.BatchMonitoringComponent),
     canActivate: [AuthGuard],
     data: { title: 'Batch Monitoring' }
-  },
-  {
-    path: 'compliance',
-    loadComponent: () => import('./components/compliance-checker/compliance-checker.component').then(m => m.ComplianceCheckerComponent),
-    canActivate: [AuthGuard],
-    data: { title: 'Compliance Checker' }
   },
   {
     path: 'admin',
