@@ -308,7 +308,7 @@
             <div class="activity-text">{{ activity.description }}</div>
             <div class="activity-time">{{ activity.timeAgo }}</div>
           </div>
-          <div class="activity-status" [class]="'status-' + activity.status?.toLowerCase()">
+          <div class="activity-status" [class]="'status-' + activity.status.toLowerCase()">
             {{ activity.status }}
           </div>
         </div>

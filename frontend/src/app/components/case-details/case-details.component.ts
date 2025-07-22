@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CasesService, Case, CaseFlag, CaseQuery } from '../../services/cases.service';
+import { Attachment, CaseNote, ActivityLog } from '../../services/case.service';
 
 interface DocumentationIssue {
   id: number;
@@ -647,6 +648,43 @@ export class CaseDetailsComponent implements OnInit {
   error = false;
   showAddFlag = false;
 
+  // New properties for attachments, notes, and activity log
+  attachments: Attachment[] = [];
+  notes: CaseNote[] = [];
+  activityLog: ActivityLog[] = [];
+  
+  // UI state for the new sections
+  activeTab: 'issues' | 'attachments' | 'notes' | 'activity' = 'issues';
+  showAttachmentModal = false;
+  showNoteModal = false;
+  selectedAttachment: Attachment | null = null;
+  selectedNote: CaseNote | null = null;
+  
+  // File upload state
+  uploadingFile = false;
+  uploadProgress = 0;
+  dragOverActive = false;
+  
+  // Note form
+  noteForm: FormGroup;
+
+  // Note types and priorities
+  noteTypes = [
+    { value: 'Clinical', label: 'Clinical Note' },
+    { value: 'General', label: 'General Note' },
+    { value: 'Query', label: 'Query Note' },
+    { value: 'Administrative', label: 'Administrative Note' },
+    { value: 'Review', label: 'Review Note' },
+    { value: 'System', label: 'System Note' }
+  ];
+
+  notePriorities = [
+    { value: 'Low', label: 'Low', color: '#10b981' },
+    { value: 'Medium', label: 'Medium', color: '#f59e0b' },
+    { value: 'High', label: 'High', color: '#ef4444' },
+    { value: 'Critical', label: 'Critical', color: '#dc2626' }
+  ];
+
   // Sample documentation issues based on Figma design
   documentationIssues: DocumentationIssue[] = [
     {
@@ -753,16 +791,60 @@ export class CaseDetailsComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.caseForm = this.createForm();
+    this.noteForm = this.fb.group({
+      type: ['', Validators.required],
+      priority: ['', Validators.required],
+      content: ['', Validators.required]
+    });
   }
 
   ngOnInit() {
     if (this.caseId) {
       this.loadCase();
+    } else {
+      // Load sample case data for demo
+      this.selectedCase = {
+        id: '1',
+        caseNumber: 'CASE-2025-001',
+        patientName: 'David Thompson',
+        mrn: '127540541',
+        age: 41,
+        sex: 'M',
+        admitDate: '2025-07-17',
+        lengthOfStay: 3,
+        unit: 'ICU',
+        room: '301A',
+        attendingPhysician: 'Dr. Johnson',
+        primaryDiagnosis: 'Pneumonia with complications',
+        secondaryDiagnoses: ['Acute respiratory failure', 'Hypertension'],
+        currentDrg: '193',
+        suggestedDrg: '177',
+        financialImpact: 2400,
+        priority: 'High',
+        status: 'In Progress',
+        assignedTo: 'Dr. Johnson',
+        complianceScore: 3,
+        riskScore: 2,
+        notes: 'Patient requires close monitoring',
+        reviewNotes: 'Potential sepsis diagnosis needs documentation',
+        flags: [],
+        queries: [],
+        escalated: false,
+        isActive: true,
+        createdAt: new Date(Date.now() - 259200000), // 3 days ago
+        updatedAt: new Date(Date.now() - 3600000) // 1 hour ago
+      };
     }
+
     // Auto-select first issue for demo
     if (this.documentationIssues.length > 0) {
       this.selectedIssue = this.documentationIssues[0];
     }
+
+    // Load sample data for new tabs
+    this.loadAttachments();
+    this.loadNotes();
+    this.loadActivityLog();
   }
 
   createForm(): FormGroup {
@@ -892,6 +974,296 @@ export class CaseDetailsComponent implements OnInit {
       case 'Completed': return 'bg-green-100 text-green-700';
       case 'On Hold': return 'bg-gray-100 text-gray-700';
       default: return 'bg-gray-100 text-gray-700';
+    }
+  }
+
+  // Tab management
+  setActiveTab(tab: 'issues' | 'attachments' | 'notes' | 'activity') {
+    this.activeTab = tab;
+    if (tab === 'attachments' && this.attachments.length === 0) {
+      this.loadAttachments();
+    } else if (tab === 'notes' && this.notes.length === 0) {
+      this.loadNotes();
+    } else if (tab === 'activity' && this.activityLog.length === 0) {
+      this.loadActivityLog();
+    }
+  }
+
+  // Attachment management
+  onFileSelected(event: any) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      this.uploadFiles(files);
+    }
+  }
+
+  onFileDrop(event: any) {
+    event.preventDefault();
+    this.dragOverActive = false;
+    const files = event.dataTransfer.files;
+    if (files && files.length > 0) {
+      this.uploadFiles(files);
+    }
+  }
+
+  onDragOver(event: any) {
+    event.preventDefault();
+    this.dragOverActive = true;
+  }
+
+  onDragLeave(event: any) {
+    event.preventDefault();
+    this.dragOverActive = false;
+  }
+
+  uploadFiles(files: FileList) {
+    if (!this.selectedCase) return;
+
+    this.uploadingFile = true;
+    this.uploadProgress = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileType', this.getFileType(file));
+      formData.append('description', `Uploaded file: ${file.name}`);
+
+      // Simulate upload progress
+      const interval = setInterval(() => {
+        this.uploadProgress += Math.random() * 20;
+        if (this.uploadProgress >= 100) {
+          this.uploadProgress = 100;
+          clearInterval(interval);
+          setTimeout(() => {
+            this.uploadingFile = false;
+            this.uploadProgress = 0;
+            this.loadAttachments();
+          }, 500);
+        }
+      }, 200);
+    }
+  }
+
+  getFileType(file: File): string {
+    if (file.type.startsWith('image/')) return 'image';
+    if (file.type.includes('pdf')) return 'pdf';
+    if (file.type.includes('document') || file.type.includes('word')) return 'document';
+    if (file.type.includes('spreadsheet') || file.type.includes('excel')) return 'spreadsheet';
+    return 'other';
+  }
+
+  loadAttachments() {
+    if (!this.selectedCase) return;
+    
+    // Mock data for now
+    this.attachments = [
+      {
+        id: '1',
+        caseId: this.selectedCase.id || '1',
+        fileName: 'medical_record_001.pdf',
+        originalName: 'Medical Record 001.pdf',
+        filePath: '/uploads/medical_record_001.pdf',
+        fileSize: 2048576,
+        mimeType: 'application/pdf',
+        fileType: 'Medical Record',
+        description: 'Initial medical record',
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        uploadedBy: 'Dr. Smith'
+      },
+      {
+        id: '2',
+        caseId: this.selectedCase.id || '1',
+        fileName: 'lab_results_070524.pdf',
+        originalName: 'Lab Results 07-05-24.pdf',
+        filePath: '/uploads/lab_results_070524.pdf',
+        fileSize: 1024768,
+        mimeType: 'application/pdf',
+        fileType: 'Lab Result',
+        description: 'Lab results from July 5th',
+        createdAt: new Date(Date.now() - 43200000).toISOString(),
+        uploadedBy: 'Nurse Johnson'
+      }
+    ];
+  }
+
+  downloadAttachment(attachment: Attachment) {
+    // In a real app, this would download the file
+    console.log('Downloading attachment:', attachment.fileName);
+  }
+
+  deleteAttachment(attachment: Attachment) {
+    if (confirm(`Are you sure you want to delete ${attachment.originalName}?`)) {
+      this.attachments = this.attachments.filter(a => a.id !== attachment.id);
+    }
+  }
+
+  // Note management
+  openNoteModal(note?: CaseNote) {
+    this.selectedNote = note || null;
+    if (note) {
+      this.noteForm.patchValue({
+        type: note.noteType,
+        priority: note.priority,
+        content: note.content
+      });
+    } else {
+      this.noteForm.reset();
+    }
+    this.showNoteModal = true;
+  }
+
+  closeNoteModal() {
+    this.showNoteModal = false;
+    this.selectedNote = null;
+    this.noteForm.reset();
+  }
+
+  saveNote() {
+    if (!this.noteForm.valid || !this.selectedCase) return;
+
+    const formValue = this.noteForm.value;
+    const note: CaseNote = {
+      id: this.selectedNote?.id || Date.now().toString(),
+      caseId: this.selectedCase.id || '1',
+      noteType: formValue.type,
+      title: `${this.noteTypes.find(t => t.value === formValue.type)?.label} - ${new Date().toLocaleDateString()}`,
+      content: formValue.content,
+      priority: formValue.priority,
+      isPrivate: false,
+      tags: [],
+      createdAt: this.selectedNote?.createdAt || new Date().toISOString(),
+      createdBy: 'Current User',
+      mentionedUsers: []
+    };
+
+    if (this.selectedNote) {
+      // Update existing note
+      const index = this.notes.findIndex(n => n.id === this.selectedNote!.id);
+      if (index !== -1) {
+        this.notes[index] = note;
+      }
+    } else {
+      // Add new note
+      this.notes.unshift(note);
+    }
+
+    this.closeNoteModal();
+  }
+
+  loadNotes() {
+    if (!this.selectedCase) return;
+
+    // Mock data for now
+    this.notes = [
+      {
+        id: '1',
+        caseId: this.selectedCase.id || '1',
+        noteType: 'Clinical',
+        title: 'Clinical Note - 01/15/2025',
+        content: 'Patient shows signs of improvement. Vital signs stable. Continue current treatment plan.',
+        priority: 'Medium',
+        isPrivate: false,
+        tags: ['improvement', 'stable'],
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        createdBy: 'Dr. Smith',
+        mentionedUsers: []
+      },
+      {
+        id: '2',
+        caseId: this.selectedCase.id || '1',
+        noteType: 'Query',
+        title: 'Query Note - 01/14/2025',
+        content: 'Query sent to physician regarding sepsis documentation. Awaiting response.',
+        priority: 'High',
+        isPrivate: false,
+        tags: ['query', 'sepsis'],
+        createdAt: new Date(Date.now() - 172800000).toISOString(),
+        createdBy: 'CDI Specialist',
+        mentionedUsers: []
+      }
+    ];
+  }
+
+  deleteNote(note: CaseNote) {
+    if (confirm('Are you sure you want to delete this note?')) {
+      this.notes = this.notes.filter(n => n.id !== note.id);
+    }
+  }
+
+  // Activity log management
+  loadActivityLog() {
+    if (!this.selectedCase) return;
+
+    // Mock data for now
+    this.activityLog = [
+      {
+        id: '1',
+        caseId: this.selectedCase.id || '1',
+        activityType: 'CASE_CREATED',
+        description: 'Case created and assigned for review',
+        oldValue: null,
+        newValue: 'New',
+        performedAt: new Date(Date.now() - 259200000).toISOString(),
+        performedBy: 'System',
+        ipAddress: '192.168.1.100',
+        userAgent: 'Web Application',
+        metadata: { source: 'automated' }
+      },
+      {
+        id: '2',
+        caseId: this.selectedCase.id || '1',
+        activityType: 'STATUS_CHANGED',
+        description: 'Case status changed from New to In Progress',
+        oldValue: 'New',
+        newValue: 'In Progress',
+        performedAt: new Date(Date.now() - 172800000).toISOString(),
+        performedBy: 'Dr. Smith',
+        ipAddress: '192.168.1.105',
+        userAgent: 'Mozilla/5.0...',
+        metadata: { reason: 'Started review process' }
+      },
+      {
+        id: '3',
+        caseId: this.selectedCase.id || '1',
+        activityType: 'QUERY_SENT',
+        description: 'Query sent to physician regarding sepsis documentation',
+        oldValue: null,
+        newValue: 'Query Pending',
+        performedAt: new Date(Date.now() - 86400000).toISOString(),
+        performedBy: 'CDI Specialist',
+        ipAddress: '192.168.1.110',
+        userAgent: 'Mozilla/5.0...',
+        metadata: { queryType: 'sepsis_documentation', physician: 'Dr. Johnson' }
+      }
+    ];
+  }
+
+  // Utility methods
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  getNoteTypeLabel(type: string): string {
+    return this.noteTypes.find(t => t.value === type)?.label || type;
+  }
+
+  getNotePriorityColor(priority: string): string {
+    return this.notePriorities.find(p => p.value === priority)?.color || '#6b7280';
+  }
+
+  getActivityIcon(activityType: string): string {
+    switch (activityType) {
+      case 'CASE_CREATED': return 'plus-circle';
+      case 'STATUS_CHANGED': return 'arrow-right';
+      case 'QUERY_SENT': return 'mail';
+      case 'NOTE_ADDED': return 'document-text';
+      case 'ATTACHMENT_UPLOADED': return 'paperclip';
+      default: return 'clock';
     }
   }
 } 

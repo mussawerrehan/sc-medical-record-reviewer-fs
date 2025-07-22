@@ -167,6 +167,11 @@ export class AppLayoutComponent implements OnInit {
     return this.navigation.find(item => item.id === this.currentView);
   }
 
+  getCurrentPageName(): string {
+    const page = this.currentPage;
+    return page ? page.name : 'Dashboard';
+  }
+
   get userInitials(): string {
     return this.user.name
       .split(' ')
