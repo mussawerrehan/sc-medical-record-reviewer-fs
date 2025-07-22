@@ -1,10 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { UserRole, User } from '../../models';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { CasesService, Case } from '../../services/cases.service';
+
+// Define simple interfaces for dashboard use
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+enum UserRole {
+  CDI_SPECIALIST = 'cdi_specialist',
+  PHYSICIAN = 'physician',
+  ADMIN = 'admin',
+  MANAGER = 'manager'
+}
 
 // Material Imports
 import { MatCardModule } from '@angular/material/card';
@@ -49,7 +64,7 @@ interface Metric {
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
+    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule
@@ -60,147 +75,99 @@ export class DashboardComponent implements OnInit {
   currentUser$: Observable<User | null>;
   timeRange = '30d';
 
-  // Top Metrics Bar - Exactly as shown in Figma
-  topMetrics: Metric[] = [
-    {
-      title: 'Open Reviews',
-      value: '47',
-      change: '+5',
-      changeType: 'neutral',
-      icon: 'clipboard',
-      description: 'Cases awaiting review'
-    },
-    {
-      title: 'Queries Sent (Pending Response)',
-      value: '23',
-      change: '+8',
-      changeType: 'neutral',
-      icon: 'help',
-      description: 'Awaiting physician response'
-    },
-    {
-      title: 'DRG Changes this Month',
-      value: '156',
-      change: '+12%',
-      changeType: 'positive',
-      icon: 'trending-up',
-      description: 'Documentation improvements'
-    },
-    {
-      title: 'Denial Risk Cases',
-      value: '8',
-      change: '-3',
-      changeType: 'positive',
-      icon: 'alert-triangle',
-      description: 'High risk for denial'
-    }
-  ];
+  // Dashboard state
+  loading = false;
+  error: string | null = null;
+  autoRefreshInterval: any;
 
-  // Priority Cases - Matching Figma design exactly
-  priorityCases: PriorityCase[] = [
+  // Analytics data
+  dashboardData = {
+    totalCases: 247,
+    pendingCases: 89,
+    completedCases: 142,
+    rejectedCases: 16,
+    totalRevenue: 2450000,
+    averageProcessingTime: 3.2,
+    complianceRate: 94.5
+  };
+
+  // Priority cases for quick access
+  priorityCases = [
     {
-      id: '1',
-      patientName: 'Sarah Martinez',
+      id: '001',
+      patientName: 'John Smith',
       age: 67,
-      sex: 'F',
-      unit: 'Cardiology',
-      primaryDiagnosis: 'Acute MI',
-      currentDrg: 'DRG 291',
-      suggestedDrg: 'DRG 280',
-      formattedImpact: '+$3,200',
-      priority: 'High',
-      flag: 'Documentation Gap'
-    },
-    {
-      id: '2',
-      patientName: 'Robert Chen',
-      age: 45,
-      sex: 'M',
-      unit: 'Respiratory',
-      primaryDiagnosis: 'Pneumonia',
-      currentDrg: 'DRG 177',
-      suggestedDrg: 'DRG 175',
-      formattedImpact: '+$1,800',
-      priority: 'High',
-      flag: 'Severity Missing'
-    },
-    {
-      id: '3',
-      patientName: 'Linda Thompson',
-      age: 69,
-      sex: 'F',
-      unit: 'Neurology',
-      primaryDiagnosis: 'Stroke',
-      currentDrg: 'DRG 064',
-      suggestedDrg: 'DRG 062',
-      formattedImpact: '+$2,400',
-      priority: 'Medium',
-      flag: 'Complications'
-    },
-    {
-      id: '4',
-      patientName: 'James Wilson',
-      age: 78,
       sex: 'M',
       unit: 'ICU',
-      primaryDiagnosis: 'Sepsis',
-      currentDrg: 'DRG 870',
-      suggestedDrg: 'DRG 871',
-      formattedImpact: '+$4,100',
       priority: 'Critical',
-      flag: 'Organ Dysfunction'
+      daysRemaining: 2,
+      potential: '$15,400',
+      primaryDiagnosis: 'Acute Kidney Injury',
+      currentDrg: 'DRG 683',
+      suggestedDrg: 'DRG 682',
+      formattedImpact: '+$15,400',
+      flag: 'High Impact'
     },
     {
-      id: '5',
-      patientName: 'Maria Rodriguez',
-      age: 62,
+      id: '002', 
+      patientName: 'Sarah Johnson',
+      age: 45,
       sex: 'F',
-      unit: 'Surgery',
-      primaryDiagnosis: 'Hip Fracture',
-      currentDrg: 'DRG 481',
-      suggestedDrg: 'DRG 480',
-      formattedImpact: '+$1,500',
+      unit: 'Cardiology',
+      priority: 'High',
+      daysRemaining: 5,
+      potential: '$8,200',
+      primaryDiagnosis: 'Myocardial Infarction',
+      currentDrg: 'DRG 280',
+      suggestedDrg: 'DRG 281',
+      formattedImpact: '+$8,200',
+      flag: 'Documentation'
+    },
+    {
+      id: '003',
+      patientName: 'Michael Brown',
+      age: 72,
+      sex: 'M',
+      unit: 'Emergency',
       priority: 'Medium',
-      flag: 'CC/MCC Review'
+      daysRemaining: 10,
+      potential: '$4,100',
+      primaryDiagnosis: 'Pneumonia',
+      currentDrg: 'DRG 193',
+      suggestedDrg: 'DRG 194',
+      formattedImpact: '+$4,100',
+      flag: 'Coding Opportunity'
     }
   ];
 
-  // Recent Activity data
-  recentActivity: RecentActivity[] = [
+  // Recent activities
+  recentActivity = [
     {
       id: 1,
-      type: 'review',
-      description: 'Case review completed for Patient ID: 12847',
-      timeAgo: '2 minutes ago',
+      action: 'Case Completed',
+      description: 'John Smith - Cardiology review completed',
+      timestamp: '2 minutes ago',
+      timeAgo: '2 min',
+      type: 'success',
       status: 'Completed'
     },
     {
       id: 2,
-      type: 'query',
-      description: 'CDI query sent to Dr. Martinez',
-      timeAgo: '15 minutes ago',
+      action: 'Query Sent',
+      description: 'Sarah Johnson - Additional documentation requested',
+      timestamp: '15 minutes ago',
+      timeAgo: '15 min',
+      type: 'warning',
       status: 'Pending'
     },
     {
       id: 3,
-      type: 'drg',
-      description: 'DRG updated from 291 to 280 (+$3,200)',
-      timeAgo: '1 hour ago',
-      status: 'Completed'
-    },
-    {
-      id: 4,
-      type: 'review',
-      description: 'New case assigned to review queue',
-      timeAgo: '2 hours ago',
-      status: 'In Progress'
-    },
-    {
-      id: 5,
-      type: 'query',
-      description: 'Physician response received for Case #98432',
-      timeAgo: '3 hours ago',
-      status: 'Completed'
+      action: 'New Case',
+      description: 'Michael Brown - Emergency admission review',
+      timestamp: '1 hour ago',
+      timeAgo: '1 hr',
+      type: 'info',
+      status: 'Open'
     }
   ];
 

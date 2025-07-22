@@ -66,6 +66,14 @@ export class AppLayoutComponent implements OnInit {
       badge: '23'
     },
     {
+      id: 'query-generator',
+      name: 'Query Generator',
+      route: '/query-generator',
+      icon: 'message',
+      description: 'Generate clinical documentation queries',
+      badge: null
+    },
+    {
       id: 'compliance-checker',
       name: 'Compliance Checker',
       route: '/compliance',
@@ -165,6 +173,11 @@ export class AppLayoutComponent implements OnInit {
 
   get currentPage(): NavigationItem | undefined {
     return this.navigation.find(item => item.id === this.currentView);
+  }
+
+  getCurrentPageName(): string {
+    const page = this.currentPage;
+    return page ? page.name : 'Dashboard';
   }
 
   get userInitials(): string {

@@ -26,7 +26,14 @@ export const routes: Routes = [
   {
     path: 'compliance',
     loadComponent: () => import('./components/compliance-checker/compliance-checker.component').then(m => m.ComplianceCheckerComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { title: 'Compliance Checker' }
+  },
+  {
+    path: 'query-generator',
+    loadComponent: () => import('./components/query-generator/query-generator.component').then(m => m.QueryGeneratorComponent),
+    canActivate: [AuthGuard],
+    data: { title: 'Query Generator' }
   },
   {
     path: 'analytics',
@@ -35,20 +42,53 @@ export const routes: Routes = [
     data: { title: 'Analytics' }
   },
   {
+    path: 'cases',
+    children: [
+      {
+        path: '',
+        redirectTo: '/claims',
+        pathMatch: 'full'
+      },
+      {
+        path: 'create',
+        loadComponent: () => import('./components/case-creation/case-creation.component').then(m => m.CaseCreationComponent),
+        canActivate: [AuthGuard],
+        data: { title: 'Create Case' }
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./components/case-details/case-details.component').then(m => m.CaseDetailsComponent),
+        canActivate: [AuthGuard],
+        data: { title: 'Case Details' }
+      }
+    ]
+  },
+  {
+    path: 'members',
+    children: [
+      {
+        path: 'enroll',
+        loadComponent: () => import('./components/member-enrollment/member-enrollment.component').then(m => m.MemberEnrollmentComponent),
+        canActivate: [AuthGuard],
+        data: { title: 'Enroll Member' }
+      }
+    ]
+  },
+  {
     path: 'ai-assistant',
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./components/ai-assistant/ai-assistant.component').then(m => m.AIAssistantComponent),
     canActivate: [AuthGuard],
     data: { title: 'AI Assistant' }
   },
   {
     path: 'batch-monitoring',
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./components/batch-monitoring/batch-monitoring.component').then(m => m.BatchMonitoringComponent),
     canActivate: [AuthGuard],
     data: { title: 'Batch Monitoring' }
   },
   {
     path: 'admin',
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./components/admin-panel/admin-panel.component').then(m => m.AdminPanelComponent),
     canActivate: [AuthGuard],
     data: { roles: [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN], title: 'Admin Panel' }
   },

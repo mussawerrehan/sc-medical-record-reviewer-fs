@@ -1,33 +1,33 @@
-<div class="case-review-container">
+<div class="case-details-container">
   <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <button class="back-btn" (click)="goBack()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Back to Worklist
-      </button>
-      <div class="header-info">
-        <h1 class="case-title">Case Review</h1>
-        <p class="patient-info">
-          {{ selectedCase?.patientName || 'Sarah Martinez' }} • MRN: {{ selectedCase?.mrn || '123456789' }}
-        </p>
+  <div class="case-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button class="back-btn" (click)="goBack()">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Worklist
+        </button>
+        <div class="case-title">
+          <h1>Case Review</h1>
+          <p>{{ getPatientName() }} • MRN: {{ getPatientMrn() }}</p>
+        </div>
       </div>
-    </div>
-    <div class="header-actions">
-      <button class="nav-btn">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Previous Case
-      </button>
-      <button class="nav-btn">
-        Next Case
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-      </button>
+      <div class="header-right">
+        <button class="nav-btn">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous Case
+        </button>
+        <button class="nav-btn">
+          Next Case
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -43,158 +43,570 @@
           Patient Summary
         </div>
         <div class="card-content">
-          <div class="patient-info-section">
-            <h4 class="patient-name">{{ selectedCase?.patientName }}</h4>
-            <p class="patient-details">{{ selectedCase?.age }} years old, {{ selectedCase?.sex }}</p>
-            <p class="patient-details">DOB: {{ getFormattedDate(selectedCase?.admitDate || '') }}</p>
-            <p class="patient-details">MRN: {{ selectedCase?.mrn }}</p>
-          </div>
-          
-          <div class="separator"></div>
-          
-          <div class="encounter-section">
-            <h4 class="section-title">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3m-3 0h6m12 0v-4m0 0V8a2 2 0 00-2-2h-2m2 2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v3"></path>
+          <!-- Patient Info -->
+          <h4 class="patient-name">{{ getPatientName() }}</h4>
+          <p class="patient-details">{{ getPatientAge() }} years old, {{ getPatientSex() }}</p>
+          <p class="patient-details">DOB: {{ getFormattedDate(getAdmitDate()) }}</p>
+          <p class="patient-details">MRN: {{ getPatientMrn() }}</p>
+        </div>
+
+        <!-- Encounter Details -->
+        <div class="info-section">
+          <div class="section-header">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
               Encounter Details
-            </h4>
-            <div class="detail-list">
-              <p>Admitted: {{ getFormattedDate(selectedCase?.admitDate || '') }}</p>
-              <p>Length of Stay: {{ selectedCase?.lengthOfStay }} days</p>
-              <p>Department: {{ selectedCase?.unit }}</p>
-              <p>Room: {{ selectedCase?.room }}</p>
-              <p>Attending: {{ selectedCase?.attendingPhysician }}</p>
-            </div>
+            </h3>
           </div>
-          
-          <div class="separator"></div>
-          
-          <div class="drg-section">
-            <h4 class="section-title">DRG Analysis</h4>
-            <div class="drg-info">
-              <div class="drg-item">
-                <span class="drg-label">Current:</span>
-                <span class="drg-value">{{ selectedCase?.currentDrg }}</span>
-              </div>
-              <div class="drg-item">
-                <span class="drg-label">Suggested:</span>
-                <span class="drg-value">{{ selectedCase?.suggestedDrg }}</span>
-              </div>
-              <div class="drg-impact">
-                Potential Impact: +${{ selectedCase?.financialImpact || 0 }}
-              </div>
-            </div>
+          <div class="info-content">
+            <p>Date Admitted: {{ getFormattedDate(getAdmitDate()) }}</p>
+            <p>Length of Stay: {{ getLengthOfStay() }} days</p>
+            <p>Department: {{ getUnit() }}</p>
+            <p>Room: {{ getRoom() }}</p>
+            <p>Attending: {{ getAttendingPhysician() }}</p>
           </div>
-          
-          <div class="separator"></div>
-          
-          <div class="severity-section">
-            <h4 class="section-title">Severity Scores</h4>
-            <div class="severity-info">
-              <p>SOI: {{ selectedCase?.complianceScore || 3 }}/4</p>
-              <p>ROM: {{ selectedCase?.riskScore || 2 }}/4</p>
-              <span [ngClass]="'priority-badge priority-' + (selectedCase?.priority?.toLowerCase() || 'medium')">
-                {{ selectedCase?.priority || 'Medium' }} Priority
+        </div>
+
+        <!-- DRG Information -->
+        <div class="drg-section">
+          <div class="drg-item">
+            <span class="drg-label">Current DRG:</span>
+            <span class="drg-value">{{ getCurrentDrg() }}</span>
+          </div>
+          <div class="drg-item suggestion">
+            <span class="drg-label">Suggested DRG:</span>
+            <span class="drg-value">{{ getSuggestedDrg() }}</span>
+          </div>
+          <div class="financial-impact">
+            Potential Impact: +${{ getFinancialImpact() }}
+          </div>
+        </div>
+
+        <!-- Scores and Priority -->
+        <div class="scores-section">
+          <div class="scores">
+            <div class="score-item">
+              <p>SOI: {{ getComplianceScore() }}/4</p>
+              <p>ROM: {{ getRiskScore() }}/4</p>
+            </div>
+            <div class="priority-badge" [ngClass]="getPriorityClass()">
+              <span class="priority-text">
+                {{ getPriority() }} Priority
               </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Workflow Management -->
+        <div class="workflow-section">
+          <div class="section-header">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              Workflow Status
+            </h3>
+          </div>
+          <div class="workflow-content">
+            <div class="current-status">
+              <span class="status-label">Current Status:</span>
+              <span class="status-badge" [ngClass]="'status-' + (selectedCase?.status || 'new').toLowerCase().replace(' ', '-')">
+                {{ selectedCase?.status || 'New' }}
+              </span>
+            </div>
+            
+            <div class="workflow-actions">
+              <button class="workflow-btn" 
+                      *ngIf="canTransitionTo('In Progress')"
+                      (click)="transitionWorkflow('In Progress')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5,3 19,12 5,21"/>
+                </svg>
+                Start Progress
+              </button>
+              
+              <button class="workflow-btn" 
+                      *ngIf="canTransitionTo('Query Sent')"
+                      (click)="transitionWorkflow('Query Sent')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Send Query
+              </button>
+              
+              <button class="workflow-btn primary" 
+                      *ngIf="canTransitionTo('Completed')"
+                      (click)="transitionWorkflow('Completed')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                Complete Case
+              </button>
+              
+              <button class="workflow-btn secondary" 
+                      *ngIf="canTransitionTo('On Hold')"
+                      (click)="transitionWorkflow('On Hold')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="10" y1="15" x2="10" y2="9"/>
+                  <line x1="14" y1="15" x2="14" y2="9"/>
+                </svg>
+                Put on Hold
+              </button>
+            </div>
+            
+            <div class="workflow-timeline">
+              <div class="timeline-item" *ngFor="let transition of workflowHistory">
+                <div class="timeline-dot" [ngClass]="'status-' + transition.toStatus.toLowerCase().replace(' ', '-')"></div>
+                <div class="timeline-content">
+                  <div class="transition-info">
+                    <span class="transition-text">{{ transition.description }}</span>
+                    <span class="transition-user">by {{ transition.performedBy }}</span>
+                  </div>
+                  <div class="transition-date">{{ getFormattedDate(transition.timestamp) }}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Center - Documentation Issues -->
+    <!-- Center - Tabbed Content -->
     <div class="main-panel">
-      <div class="issues-card">
-        <div class="card-header">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      <!-- Tab Navigation -->
+      <div class="tab-nav">
+        <div 
+          class="tab-link" 
+          [class.active]="activeTab === 'issues'"
+          (click)="setActiveTab('issues')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          Documentation Issues & Recommendations
+          <span>Documentation Issues</span>
+          <span class="tab-badge">{{ documentationIssues.length }}</span>
         </div>
-        <div class="card-subtitle">
-          {{ documentationIssues.length }} issues identified requiring attention
+        
+        <div 
+          class="tab-link" 
+          [class.active]="activeTab === 'attachments'"
+          (click)="setActiveTab('attachments')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.64 16.2a2 2 0 01-2.83-2.83l8.49-8.49"/>
+          </svg>
+          <span>Attachments</span>
+          <span class="tab-badge">{{ attachments.length }}</span>
         </div>
-        <div class="card-content">
-          <div class="issues-list">
+        
+        <div 
+          class="tab-link" 
+          [class.active]="activeTab === 'notes'"
+          (click)="setActiveTab('notes')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <span>Notes</span>
+          <span class="tab-badge">{{ notes.length }}</span>
+        </div>
+        
+        <div 
+          class="tab-link" 
+          [class.active]="activeTab === 'activity'"
+          (click)="setActiveTab('activity')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Activity Log</span>
+          <span class="tab-badge">{{ activityLog.length }}</span>
+        </div>
+        
+        <div 
+          class="tab-link" 
+          [class.active]="activeTab === 'claims'"
+          (click)="setActiveTab('claims')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>Claims</span>
+          <span class="tab-badge">{{ claims.length }}</span>
+        </div>
+      </div>
+
+      <!-- Documentation Issues Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'issues'">
+        <div class="documentation-section">
+          <div class="section-header">
+            <h3>Documentation Issues & Recommendations</h3>
+            <p class="section-subtitle">{{ documentationIssues.length }} issues identified requiring attention</p>
+          </div>
+          
+          <div class="issues-container">
             <div 
               *ngFor="let issue of documentationIssues" 
-              class="issue-item"
-              [class.expanded]="selectedIssue?.id === issue.id"
+              class="issue-card"
+              [class.selected]="selectedIssue?.id === issue.id"
               (click)="selectIssue(issue)"
             >
-              <div class="issue-header">
-                <div class="issue-icon">
-                  <svg *ngIf="issue.type === 'clinical'" class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                  </svg>
-                  <svg *ngIf="issue.type === 'coding'" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                  </svg>
-                  <svg *ngIf="issue.type === 'compliance'" class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                  </svg>
-                </div>
-                <div class="issue-content">
+              <!-- Issue Header -->
+              <div class="issue-card-header">
+                <div class="issue-info">
                   <div class="issue-title-row">
-                    <span class="issue-title">{{ issue.title }}</span>
-                    <span [ngClass]="'severity-badge severity-' + issue.severity">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="issue-icon">
+                      <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h4 class="issue-title">{{ issue.title }}</h4>
+                    <span class="severity-badge" [ngClass]="'severity-' + issue.severity">
                       {{ getSeverityLabel(issue.severity) }}
                     </span>
                   </div>
                   <p class="issue-description">{{ issue.description }}</p>
-                  <p class="issue-impact">{{ issue.impact }}</p>
                 </div>
-                <div class="expand-icon">
-                  <svg class="w-4 h-4" [class.rotated]="selectedIssue?.id === issue.id" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                <div class="issue-toggle">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                       [class.rotated]="selectedIssue?.id === issue.id">
+                    <path d="M6 9l6 6 6-6"/>
                   </svg>
                 </div>
               </div>
-              
+
+              <!-- Financial Impact -->
+              <div class="financial-impact" *ngIf="issue.impact">
+                <span class="impact-text">{{ issue.impact }}</span>
+              </div>
+
+              <!-- Expanded Content -->
               <div class="issue-details" *ngIf="selectedIssue?.id === issue.id">
+                <!-- Evidence Section -->
                 <div class="evidence-section">
-                  <h5 class="evidence-title">Evidence:</h5>
-                  <div class="evidence-list">
+                  <h5 class="section-title">Evidence:</h5>
+                  <div class="evidence-grid">
                     <div *ngFor="let evidence of issue.evidence" class="evidence-item">
-                      <div class="evidence-source">{{ evidence.source }}</div>
+                      <div class="evidence-header">
+                        <strong>{{ evidence.source }}</strong>
+                      </div>
                       <div class="evidence-content">{{ evidence.content }}</div>
                     </div>
                   </div>
                 </div>
-                
-                <div class="recommendations-section">
-                  <h5 class="recommendations-title">Recommendations:</h5>
-                  <ul class="recommendations-list">
-                    <li *ngFor="let rec of issue.recommendations" class="recommendation-item">
-                      <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+
+                <!-- Recommendations Section -->
+                <div class="recommendations-section" *ngIf="issue.recommendations && issue.recommendations.length > 0">
+                  <h5 class="section-title">Recommendations:</h5>
+                  <div class="recommendations-list">
+                    <div *ngFor="let rec of issue.recommendations" class="recommendation-item">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="check-icon">
+                        <path d="M20 6L9 17l-5-5"/>
                       </svg>
-                      {{ rec }}
-                    </li>
-                  </ul>
+                      <span>{{ rec }}</span>
+                    </div>
+                  </div>
                 </div>
-                
+
+                <!-- Action Buttons -->
                 <div class="issue-actions">
-                  <button class="action-btn primary" (click)="generateQuery(issue)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                  <button class="action-btn primary" (click)="generateQuery(issue); $event.stopPropagation()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
                     Generate Query
                   </button>
-                  <button class="action-btn secondary" (click)="approveIssue(issue)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  <button class="action-btn secondary" (click)="approveIssue(issue); $event.stopPropagation()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 6L9 17l-5-5"/>
                     </svg>
                     Approve
                   </button>
-                  <button class="action-btn tertiary" (click)="markNoIssue(issue)">
+                  <button class="action-btn tertiary" (click)="markNoIssue(issue); $event.stopPropagation()">
                     Mark No Issue
                   </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Attachments Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'attachments'">
+        <div class="attachments-section">
+          <div class="section-header">
+            <h3>Case Attachments</h3>
+            <button class="btn-primary" (click)="showAttachmentModal = true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m7-5l-7 7m0 0l7 7"/>
+              </svg>
+              Upload Files
+            </button>
+          </div>
+
+          <div class="attachments-grid" *ngIf="attachments.length > 0">
+            <div *ngFor="let attachment of attachments" class="attachment-item">
+              <div class="attachment-icon">
+                <svg *ngIf="attachment.fileType === 'Medical Record'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                  <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <svg *ngIf="attachment.fileType === 'Lab Result'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2h-4m-4 0V9a2 2 0 011-1.73l3-1.8a2 2 0 012 0l3 1.8A2 2 0 0121 9v2a2 2 0 01-1 1.73l-3 1.8a2 2 0 01-2 0l-3-1.8A2 2 0 019 11z"/>
+                </svg>
+                <svg *ngIf="attachment.fileType === 'Image'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                <svg *ngIf="attachment.fileType === 'Document' || attachment.fileType === 'Other'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                </svg>
+              </div>
+              
+              <div class="attachment-info">
+                <div class="attachment-name">{{ attachment.originalName }}</div>
+                <div class="attachment-meta">
+                  {{ formatFileSize(attachment.fileSize) }} • 
+                  {{ attachment.createdAt | date:'short' }} • 
+                  {{ attachment.uploadedBy }}
+                </div>
+                <div class="attachment-description" *ngIf="attachment.description">
+                  {{ attachment.description }}
+                </div>
+              </div>
+              
+              <div class="attachment-actions">
+                <button class="action-btn" (click)="downloadAttachment(attachment)" title="Download">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m7-5l-7 7m0 0l7 7"/>
+                  </svg>
+                </button>
+                <button class="action-btn delete" (click)="deleteAttachment(attachment)" title="Delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="attachments.length === 0">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.64 16.2a2 2 0 01-2.83-2.83l8.49-8.49"/>
+            </svg>
+            <h3>No attachments yet</h3>
+            <p>Upload medical records, lab results, or other relevant documents.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'notes'">
+        <div class="notes-section">
+          <div class="section-header">
+            <h3>Case Notes</h3>
+            <button class="btn-primary" (click)="openNoteModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+              Add Note
+            </button>
+          </div>
+
+          <div class="notes-list" *ngIf="notes.length > 0">
+            <div *ngFor="let note of notes" class="note-item">
+              <div class="note-header">
+                <div class="note-type-badge" [style.background-color]="getNotePriorityColor(note.priority)">
+                  {{ getNoteTypeLabel(note.noteType) }}
+                </div>
+                <div class="note-priority" [style.color]="getNotePriorityColor(note.priority)">
+                  {{ note.priority }}
+                </div>
+                <div class="note-date">{{ note.createdAt | date:'short' }}</div>
+                <div class="note-actions">
+                  <button class="action-btn" (click)="openNoteModal(note)" title="Edit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button class="action-btn delete" (click)="deleteNote(note)" title="Delete">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3,6 5,6 21,6"/>
+                      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="note-content">
+                <h4 class="note-title">{{ note.title }}</h4>
+                <p class="note-text">{{ note.content }}</p>
+                <div class="note-tags" *ngIf="note.tags.length > 0">
+                  <span *ngFor="let tag of note.tags" class="tag">{{ tag }}</span>
+                </div>
+                <div class="note-footer">
+                  <span class="note-author">{{ note.createdBy }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-state" *ngIf="notes.length === 0">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <h3>No notes yet</h3>
+            <p>Add clinical notes, queries, or other case-related documentation.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Log Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'activity'">
+        <div class="activity-section">
+          <div class="section-header">
+            <h3>Activity Timeline</h3>
+            <div class="activity-filters">
+              <select class="filter-select" [(ngModel)]="activityFilter" (change)="filterActivity()">
+                <option value="all">All Activities</option>
+                <option value="status">Status Changes</option>
+                <option value="assignment">Assignments</option>
+                <option value="documentation">Documentation</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="activity-timeline" *ngIf="filteredActivityLog.length > 0; else activityEmptyState">
+            <div class="activity-item" *ngFor="let activity of filteredActivityLog">
+              <div class="activity-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="m12 1 0 6m0 6 0 6"/>
+                  <path d="m1 12 6 0m6 0 6 0"/>
+                </svg>
+              </div>
+              <div class="activity-content">
+                <div class="activity-description">{{ activity.description }}</div>
+                <div class="activity-details" *ngIf="activity.oldValue && activity.newValue">
+                  <span class="old-value">{{ activity.oldValue }}</span>
+                  <span class="arrow">→</span>
+                  <span class="new-value">{{ activity.newValue }}</span>
+                </div>
+                <div class="activity-meta">
+                  <span>{{ activity.performedBy }}</span>
+                  <span>{{ getFormattedDate(activity.performedAt) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #activityEmptyState>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <h3>No Activity Yet</h3>
+              <p>Activity will appear here as actions are taken on this case.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Claims Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'claims'">
+        <div class="claims-section">
+          <div class="section-header">
+            <h3>Claims Management</h3>
+            <div class="claims-actions">
+              <button class="btn-secondary" (click)="openAddClaimModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Claim
+              </button>
+              <button class="btn-primary" (click)="openBulkClaimsModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                  <path d="m9 15 2 2 4-4"/>
+                </svg>
+                Bulk Import
+              </button>
+            </div>
+          </div>
+          
+          <div class="claims-list" *ngIf="claims.length > 0; else claimsEmptyState">
+            <div class="claims-table">
+              <div class="table-header">
+                <div class="header-cell">Claim ID</div>
+                <div class="header-cell">Service Date</div>
+                <div class="header-cell">Provider</div>
+                <div class="header-cell">Procedure Code</div>
+                <div class="header-cell">Amount</div>
+                <div class="header-cell">Status</div>
+                <div class="header-cell">Actions</div>
+              </div>
+              
+              <div class="table-row" *ngFor="let claim of claims">
+                <div class="table-cell">
+                  <span class="claim-id">{{ claim.claimId }}</span>
+                </div>
+                <div class="table-cell">{{ getFormattedDate(claim.serviceDate) }}</div>
+                <div class="table-cell">{{ claim.provider }}</div>
+                <div class="table-cell">
+                  <span class="procedure-code">{{ claim.procedureCode }}</span>
+                  <span class="procedure-desc">{{ claim.procedureDescription }}</span>
+                </div>
+                <div class="table-cell">
+                  <span class="amount">${{ claim.amount.toLocaleString() }}</span>
+                </div>
+                <div class="table-cell">
+                  <span class="status-badge" [ngClass]="'status-' + claim.status.toLowerCase()">
+                    {{ claim.status }}
+                  </span>
+                </div>
+                <div class="table-cell">
+                  <button class="action-btn" (click)="editClaim(claim)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                    </svg>
+                  </button>
+                  <button class="action-btn delete" (click)="deleteClaim(claim.id)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3,6 5,6 21,6"/>
+                      <path d="m19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #claimsEmptyState>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              <h3>No Claims Added</h3>
+              <p>Start by adding individual claims or importing multiple claims at once.</p>
+              <button class="btn-primary" (click)="openAddClaimModal()">Add First Claim</button>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -275,5 +687,100 @@
   <div *ngIf="error" class="error-state">
     <div class="error-message">Error loading case details</div>
     <button class="retry-btn" (click)="loadCase()">Retry</button>
+  </div>
+
+  <!-- File Upload Modal -->
+  <div class="modal-overlay" *ngIf="showAttachmentModal" (click)="showAttachmentModal = false">
+    <div class="upload-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Upload Attachments</h3>
+        <button class="close-btn" (click)="showAttachmentModal = false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="upload-area" 
+             [class.drag-over]="dragOverActive"
+             (dragover)="onDragOver($event)" 
+             (dragleave)="onDragLeave($event)" 
+             (drop)="onFileDrop($event)">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m14-7l-7-7-7 7m7-7v18"/>
+          </svg>
+          <h4>Drop files here or click to browse</h4>
+          <p>Supported formats: PDF, DOC, DOCX, JPG, PNG (Max 10MB each)</p>
+          <input type="file" multiple (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" #fileInput>
+          <button class="browse-btn" (click)="fileInput.click()">Choose Files</button>
+        </div>
+
+        <div class="upload-progress" *ngIf="uploadingFile">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+          </div>
+          <p>Uploading... {{ uploadProgress | number:'1.0-0' }}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Creation Modal -->
+  <div class="modal-overlay" *ngIf="showNoteModal" (click)="closeNoteModal()">
+    <div class="note-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedNote ? 'Edit Note' : 'Add Note' }}</h3>
+        <button class="close-btn" (click)="closeNoteModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form [formGroup]="noteForm" (ngSubmit)="saveNote()" class="note-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="noteType">Note Type</label>
+            <select id="noteType" formControlName="type" class="form-control">
+              <option value="">Select type...</option>
+              <option *ngFor="let type of noteTypes" [value]="type.value">
+                {{ type.label }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority" formControlName="priority" class="form-control">
+              <option value="">Select priority...</option>
+              <option *ngFor="let priority of notePriorities" [value]="priority.value">
+                {{ priority.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea 
+            id="content" 
+            formControlName="content" 
+            class="form-control" 
+            rows="6" 
+            placeholder="Enter note content...">
+          </textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeNoteModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="!noteForm.valid">
+            {{ selectedNote ? 'Update Note' : 'Add Note' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div> 

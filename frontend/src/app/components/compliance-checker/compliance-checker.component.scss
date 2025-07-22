@@ -1,7 +1,6 @@
 /* Compliance Checker Component Styles */
 
-/* Import global medical theme variables */
-@import '../../app.component.scss';
+/* Global medical theme variables - using component-scoped styles instead */
 
 /* Utility classes for spacing */
 .space-y-6 > :not([hidden]) ~ :not([hidden]) {

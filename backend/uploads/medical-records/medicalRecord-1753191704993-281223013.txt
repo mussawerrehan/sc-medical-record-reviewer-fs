@@ -1,0 +1,126 @@
+GENERAL HOSPITAL OF METROPOLITAN AREA
+OPERATIVE REPORT & CLINICAL DOCUMENTATION
+
+=====================================
+PATIENT INFORMATION
+=====================================
+Patient Name: Michael Thompson
+Medical Record Number: MRN-456789012
+Date of Birth: September 22, 1972 (Age: 52)
+Sex: Male
+Address: 1847 Pine Avenue, Denver, CO 80202
+Phone: (303) 555-0287
+Insurance: Aetna PPO - Policy #AE456789012
+
+=====================================
+ADMISSION DETAILS
+=====================================
+Admission Date: January 20, 2025
+Admission Time: 08:15 hours
+Admission Type: Elective Surgery
+Chief Complaint: Right inguinal hernia repair
+Attending Physician: Dr. Amanda Foster, MD
+Admitting Service: General Surgery
+Room Number: SURG-312
+
+=====================================
+PRESENT ILLNESS
+=====================================
+Mr. Thompson is a 52-year-old male who presents for elective right inguinal hernia repair. The patient has been experiencing a progressively enlarging right inguinal bulge over the past 8 months, associated with mild discomfort and aching sensation, particularly with heavy lifting and straining. The hernia has become more prominent and symptomatic over the last 2 months.
+
+=====================================
+PAST MEDICAL HISTORY
+=====================================
+- Benign prostatic hyperplasia
+- Gastroesophageal reflux disease
+- History of appendectomy (1995)
+- No known drug allergies
+- Current medications: Tamsulosin 0.4mg daily, Omeprazole 20mg daily
+
+=====================================
+PHYSICAL EXAMINATION
+=====================================
+Vital Signs:
+- Blood Pressure: 132/78 mmHg
+- Heart Rate: 72 bpm, regular
+- Respiratory Rate: 16/min
+- Temperature: 98.4°F (36.9°C)
+- Weight: 185 lbs, Height: 5'10"
+
+General: Well-appearing male in no acute distress
+Cardiovascular: Regular rate and rhythm, no murmurs
+Pulmonary: Clear to auscultation bilaterally
+Abdomen: Soft, non-tender, reducible right inguinal hernia measuring approximately 4cm
+
+=====================================
+PREOPERATIVE DIAGNOSIS
+=====================================
+Right indirect inguinal hernia
+
+=====================================
+OPERATIVE PROCEDURE
+=====================================
+Date of Surgery: January 20, 2025
+Surgeon: Dr. Amanda Foster, MD
+Assistant: Dr. Kevin Liu, MD
+Anesthesia: General endotracheal anesthesia
+Procedure: Laparoscopic TEP (Totally Extraperitoneal) inguinal hernia repair with mesh
+
+OPERATIVE TECHNIQUE:
+Under general anesthesia, the patient was positioned supine. The abdomen was prepped and draped in sterile fashion. A 12mm trocar was placed at the umbilicus using Hasson technique. CO2 insufflation was initiated to 15mmHg. Additional 5mm trocars were placed at the midline suprapubically and at the left lateral border of the rectus muscle.
+
+The peritoneum was incised lateral to the medial umbilical ligament and dissection was carried out in the preperitoneal space. The direct space, indirect space, and femoral space were completely dissected. A large indirect hernia sac was identified and completely reduced. The lateral femoral cutaneous nerve and genitofemoral nerve were identified and preserved.
+
+A 15x10cm polypropylene mesh was placed to cover the myopectineal orifice and secured with tacks medial to the anterior superior iliac spine and lateral to the midline. The peritoneum was then re-approximated over the mesh with running suture.
+
+Trocars were removed under direct visualization. Fascia was closed at the umbilical port. All skin incisions were closed with dermabond.
+
+=====================================
+POSTOPERATIVE COURSE
+=====================================
+The patient tolerated the procedure well without complications. He was transferred to recovery in stable condition. Postoperatively, he experienced minimal pain controlled with oral analgesics. Diet was advanced as tolerated. The patient was ambulatory within 4 hours of surgery.
+
+=====================================
+DISCHARGE INFORMATION
+=====================================
+Discharge Date: January 21, 2025
+Discharge Disposition: Home
+Length of Stay: 1 day
+Discharge Condition: Stable, afebrile, tolerating regular diet
+
+Discharge Instructions:
+- No heavy lifting >15 lbs for 6 weeks
+- May shower tomorrow, keep incisions dry
+- Activity as tolerated, gradually increase
+- Return to work in 1 week (desk job)
+
+Discharge Medications:
+- Ibuprofen 600mg every 6 hours as needed for pain
+- Acetaminophen 650mg every 6 hours as needed
+- Resume home medications (Tamsulosin, Omeprazole)
+
+Follow-up:
+- Surgery clinic in 2 weeks
+- Primary care in 4 weeks
+
+=====================================
+POSTOPERATIVE DIAGNOSIS
+=====================================
+Right indirect inguinal hernia, status post laparoscopic TEP repair with mesh
+
+=====================================
+COMPLICATIONS
+=====================================
+None
+
+=====================================
+CODING INFORMATION
+=====================================
+Principal Diagnosis: K40.90 - Unilateral inguinal hernia, without obstruction or gangrene, not specified as recurrent
+
+Principal Procedure: 0YB60ZZ - Excision of Right Inguinal Region, Open Approach
+
+DRG: 394 - Other Digestive System Diagnoses with CC
+
+Attending Surgeon: Dr. Amanda Foster, MD
+Date of Documentation: January 21, 2025 
