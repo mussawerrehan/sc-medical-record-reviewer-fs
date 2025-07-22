@@ -39,6 +39,15 @@ export interface FilterState {
   userRole: string;
 }
 
+export interface LookupData {
+  facilities: string[];
+  serviceLines: string[];
+  userRoles: string[];
+  priorities: string[];
+  statuses: string[];
+  workflowStatuses: string[];
+}
+
 export interface AnalyticsDashboardData {
   metricTiles: MetricTile[];
   drgImpactData: ChartData[];
