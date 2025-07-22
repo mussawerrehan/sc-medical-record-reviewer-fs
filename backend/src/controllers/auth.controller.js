@@ -1,4 +1,5 @@
-const { User } = require('../models');
+const mongoose = require('mongoose');
+const { User } = require('../models/user.model');
 const { generateAuthTokens, verifyToken } = require('../utils/jwt.utils');
 const logger = require('../utils/logger');
 

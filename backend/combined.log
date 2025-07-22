@@ -28,3 +28,108 @@
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-07-21T12:18:53.308Z"}
 {"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T12:51:53.534Z"}
 {"level":"info","message":"Connected to MongoDB","timestamp":"2025-07-21T12:51:54.447Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T19:21:14.701Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T19:21:14.706Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T19:21:14.707Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T20:17:51.447Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T20:17:51.451Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T20:17:51.452Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T20:47:07.618Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T20:47:07.622Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T20:47:07.622Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:11:50.935Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T21:11:50.940Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T21:11:50.941Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:12:00.967Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T21:12:00.971Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T21:12:00.972Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:36:30.776Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T21:36:30.780Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T21:36:30.780Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:41:05.403Z"}
+{"level":"info","message":"Database connection established successfully","timestamp":"2025-07-21T21:41:05.407Z"}
+{"level":"info","message":"Database synchronized","timestamp":"2025-07-21T21:41:05.408Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:45:02.588Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:45:02.595Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:45:02.596Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:45:03.881Z"}
+{"code":11000,"errorLabelSet":{},"errorResponse":{"code":11000,"errmsg":"E11000 duplicate key error collection: medical_review.users index: email_1 dup key: { email: \"demo@smartcycle.ai\" }","index":0,"keyPattern":{"email":1},"keyValue":{"email":"demo@smartcycle.ai"}},"index":0,"keyPattern":{"email":1},"keyValue":{"email":"demo@smartcycle.ai"},"level":"error","message":"MongoDB connection error: E11000 duplicate key error collection: medical_review.users index: email_1 dup key: { email: \"demo@smartcycle.ai\" }","stack":"MongoServerError: E11000 duplicate key error collection: medical_review.users index: email_1 dup key: { email: \"demo@smartcycle.ai\" }\n    at InsertOneOperation.execute (/Users/mussawaralyasah/claim-system/backend/node_modules/mongodb/lib/operations/insert.js:51:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async tryOperation (/Users/mussawaralyasah/claim-system/backend/node_modules/mongodb/lib/operations/execute_operation.js:207:20)\n    at async executeOperation (/Users/mussawaralyasah/claim-system/backend/node_modules/mongodb/lib/operations/execute_operation.js:75:16)\n    at async Collection.insertOne (/Users/mussawaralyasah/claim-system/backend/node_modules/mongodb/lib/collection.js:157:16)","timestamp":"2025-07-21T21:45:04.376Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:45:35.785Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:45:35.790Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:45:35.790Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:45:36.594Z"}
+{"level":"info","message":"Demo user already exists (duplicate key)","timestamp":"2025-07-21T21:45:37.096Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T21:45:37.096Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T21:51:57.623Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:52:03.115Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:52:03.118Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:52:03.119Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:52:04.471Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T21:52:04.721Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T21:52:04.722Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T21:54:24.262Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:54:32.321Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:54:32.325Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:54:32.326Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:54:33.351Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T21:54:33.604Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T21:54:33.604Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T21:57:38.107Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:57:43.713Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:57:43.718Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:57:43.718Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:57:44.906Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T21:57:45.142Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T21:57:45.143Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T21:58:05.582Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:58:14.503Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:58:14.506Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:58:14.506Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:58:15.314Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T21:58:15.566Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T21:58:15.566Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T21:58:29.614Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T21:59:16.151Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T21:59:16.157Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T21:59:16.159Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T21:59:17.176Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T21:59:17.419Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T21:59:17.420Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T22:00:25.183Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T22:00:25.188Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T22:00:25.188Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T22:00:26.045Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T22:00:26.283Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T22:00:26.284Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T22:01:10.381Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T22:01:12.907Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T22:01:12.910Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T22:01:12.911Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T22:01:13.710Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T22:01:13.965Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T22:01:13.966Z"}
+{"level":"info","message":"SIGTERM received","timestamp":"2025-07-21T22:03:57.164Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T22:03:59.737Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T22:03:59.740Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T22:03:59.740Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T22:04:00.622Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T22:04:00.867Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T22:04:00.867Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T22:33:07.178Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T22:33:07.182Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T22:33:07.183Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T22:33:08.219Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T22:33:08.469Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T22:33:08.469Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-21T23:30:46.794Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-21T23:30:46.797Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-21T23:30:46.798Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-21T23:30:47.844Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-21T23:30:48.092Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-21T23:30:48.092Z"}
+{"level":"info","message":"Server is running on port 3000","timestamp":"2025-07-22T00:02:08.746Z"}
+{"level":"info","message":"SQLite connection established successfully","timestamp":"2025-07-22T00:02:08.750Z"}
+{"level":"info","message":"SQLite database synchronized","timestamp":"2025-07-22T00:02:08.751Z"}
+{"level":"info","message":"MongoDB connection established successfully","timestamp":"2025-07-22T00:02:09.891Z"}
+{"level":"info","message":"Demo user already exists","timestamp":"2025-07-22T00:02:10.133Z"}
+{"level":"info","message":"All database connections established","timestamp":"2025-07-22T00:02:10.133Z"}

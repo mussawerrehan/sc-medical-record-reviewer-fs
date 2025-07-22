@@ -1,0 +1,183 @@
+UNIVERSITY MEDICAL CENTER
+NEUROLOGY SERVICE CLINICAL DOCUMENTATION
+
+=====================================
+PATIENT INFORMATION
+=====================================
+Patient Name: Robert Chen
+Medical Record Number: MRN-345678901
+Date of Birth: June 3, 1958 (Age: 66)
+Sex: Male
+Address: 1532 Cedar Drive, Seattle, WA 98101
+Phone: (206) 555-0194
+Insurance: Kaiser Permanente - ID #345678901
+
+=====================================
+ADMISSION DETAILS
+=====================================
+Admission Date: January 24, 2025
+Admission Time: 11:20 hours
+Admission Type: Emergency - Code Stroke
+Chief Complaint: Sudden onset left-sided weakness and speech difficulty
+Attending Physician: Dr. Jonathan Martinez, MD
+Admitting Service: Neurology/Stroke Team
+Room Number: NEURO-156
+
+=====================================
+PRESENT ILLNESS
+=====================================
+Mr. Chen is a 66-year-old right-handed male with a history of hypertension and diabetes who was brought to the emergency department by EMS after sudden onset of left-sided weakness and difficulty speaking. According to his wife, the patient was watching television at approximately 10:30 AM when she noticed he was unable to move his left arm and his speech became slurred. She immediately called 911. Last known normal was 10:15 AM.
+
+The patient was alert and cooperative but had obvious left facial droop, left arm and leg weakness, and expressive aphasia. No loss of consciousness was reported.
+
+=====================================
+PAST MEDICAL HISTORY
+=====================================
+- Hypertension (diagnosed 2008)
+- Type 2 Diabetes Mellitus (diagnosed 2012)
+- Hyperlipidemia
+- Former smoker (quit 2018, 30-pack-year history)
+- No previous stroke or TIA
+- No known drug allergies
+
+Current Medications:
+- Metformin 1000mg twice daily
+- Lisinopril 20mg daily
+- Atorvastatin 40mg daily
+- Metoprolol 50mg twice daily
+
+=====================================
+PHYSICAL EXAMINATION
+=====================================
+Vital Signs:
+- Blood Pressure: 178/95 mmHg
+- Heart Rate: 88 bpm, regular
+- Respiratory Rate: 18/min
+- Temperature: 98.6°F (37.0°C)
+- Oxygen Saturation: 98% on room air
+- Weight: 190 lbs, Height: 5'8"
+
+NIHSS Score: 12
+
+Neurological Examination:
+- Level of consciousness: Alert, follows commands
+- Orientation: Oriented to person and place, not time
+- Speech: Expressive aphasia, understands commands
+- Visual fields: Full
+- Facial palsy: Left facial droop (central pattern)
+- Motor: Right side normal strength (5/5), Left arm 2/5, Left leg 3/5
+- Sensation: Decreased on left side
+- Coordination: Unable to assess left side due to weakness
+- Gait: Unable to ambulate
+
+General Physical:
+- Cardiovascular: Regular rate and rhythm, no murmurs
+- Pulmonary: Clear to auscultation bilaterally
+- Abdomen: Soft, non-tender
+
+=====================================
+DIAGNOSTIC STUDIES
+=====================================
+CT Head (non-contrast): No acute hemorrhage, early signs of right MCA infarct
+
+CT Angiography: Occlusion of right M1 segment of middle cerebral artery
+
+MRI Brain (DWI): Acute infarct in right MCA territory
+
+Laboratory Results:
+- Glucose: 185 mg/dL
+- INR: 1.0
+- PTT: 28 seconds
+- Platelets: 245,000/μL
+- Creatinine: 1.1 mg/dL
+- Troponin: <0.01 ng/mL
+
+ECG: Normal sinus rhythm, no acute changes
+
+=====================================
+ACUTE TREATMENT
+=====================================
+Arrival Time: 11:20 AM
+CT Completed: 11:35 AM
+tPA Decision: 11:50 AM
+tPA Administration: 12:05 PM (1 hour 35 minutes from onset)
+
+Treatment: IV tissue plasminogen activator (tPA) 0.9mg/kg
+Door-to-needle time: 45 minutes
+
+The patient met criteria for thrombolytic therapy:
+- Onset <4.5 hours
+- Disabling deficit
+- No contraindications
+- Family consent obtained
+
+=====================================
+HOSPITAL COURSE
+=====================================
+Day 1: Patient received tPA with no immediate complications. Transferred to stroke unit for monitoring. Neurological checks every 2 hours.
+
+Day 2: Repeat CT head showed no hemorrhage. Mild improvement in left arm strength (2/5 to 3/5). Speech therapy evaluation initiated.
+
+Day 3: Continued improvement. Left arm now 4/5 strength, left leg 4/5. Speech clearer but still mild aphasia. Started on dual antiplatelet therapy.
+
+Day 4: Physical therapy evaluation. Patient able to ambulate with assistance. Occupational therapy assessment completed.
+
+Day 5: Ready for acute rehabilitation.
+
+=====================================
+DISCHARGE INFORMATION
+=====================================
+Discharge Date: January 29, 2025
+Discharge Disposition: Transfer to acute inpatient rehabilitation
+Length of Stay: 5 days
+Discharge Condition: Stable, improved
+
+Discharge Medications:
+- Aspirin 81mg daily
+- Clopidogrel 75mg daily
+- Atorvastatin 80mg daily (increased)
+- Lisinopril 20mg daily
+- Metoprolol 50mg twice daily
+- Metformin 1000mg twice daily
+
+Stroke Prevention Measures:
+- Blood pressure goal <140/90
+- LDL goal <70 mg/dL
+- HbA1c goal <7%
+- Smoking cessation counseling completed
+
+Follow-up:
+- Neurology clinic in 2 weeks
+- Primary care in 1 week
+- Cardiology consult scheduled
+
+=====================================
+FUNCTIONAL STATUS
+=====================================
+Admission NIHSS: 12
+Discharge NIHSS: 6
+Modified Rankin Scale: 3 (moderate disability)
+
+Deficits at discharge:
+- Mild left arm weakness (4+/5)
+- Mild expressive aphasia
+- Requires assistance with ADLs
+
+=====================================
+CODING INFORMATION
+=====================================
+Principal Diagnosis: I63.511 - Cerebral infarction due to unspecified occlusion or stenosis of right middle cerebral artery
+
+Secondary Diagnoses:
+- I10 - Essential hypertension
+- E11.9 - Type 2 diabetes mellitus without complications
+- E78.5 - Hyperlipidemia, unspecified
+- R47.01 - Aphasia
+- G81.94 - Hemiplegia, unspecified affecting left nondominant side
+
+Principal Procedure: 3E0317Z - Introduction of Thrombolytic into Peripheral Vein, Percutaneous Approach
+
+DRG: 064 - Intracranial Hemorrhage or Cerebral Infarction with MCC
+
+Attending Physician: Dr. Jonathan Martinez, MD
+Date of Documentation: January 29, 2025 

@@ -1,423 +1,748 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface CaseFlag {
-  type: 'clinical' | 'coding' | 'compliance';
-  text: string;
-  severity: 'high' | 'medium' | 'low';
-}
-
-interface CaseItem {
-  id: string;
-  patient: string;
-  mrn: string;
-  age: number;
-  sex: string;
-  admitDate: string;
-  los: number;
-  primaryDiagnosis: string;
-  currentDrg: string;
-  suggestedDrg: string;
-  flags: CaseFlag[];
-  priority: 'High' | 'Medium' | 'Low';
-  impact: string;
-  assignedTo: string;
-  status: 'New' | 'In Progress' | 'Query Sent' | 'Resolved';
-  unit: string;
-}
+import { CasesService, Case, CaseFilters } from '../../services/cases.service';
+import { CaseDetailsComponent } from '../case-details/case-details.component';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-case-worklist',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <div class="p-6 space-y-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-foreground">Case Worklist</h1>
-          <p class="text-muted-foreground mt-1">Review cases requiring documentation improvement</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <button 
-            class="flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm hover:bg-muted"
-            (click)="toggleFilters()"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-            </svg>
-            Filters
-          </button>
-          <button class="flex items-center gap-2 px-4 py-2 bg-medical-primary text-white rounded-md hover:bg-medical-primary/90">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            New Case
-          </button>
-        </div>
-      </div>
-
-      <!-- Search and Filters -->
-      <div class="medical-card p-4">
-        <div class="flex items-center gap-4 mb-4">
-          <div class="flex-1 relative">
-            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <input
-              type="text"
-              placeholder="Search by patient name, MRN, or diagnosis..."
-              [(ngModel)]="searchTerm"
-              class="pl-10 pr-4 py-2 w-full border border-border bg-input-background rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent"
-            />
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground">{{ filteredCases.length }} cases</span>
-          </div>
-        </div>
-
-        <!-- Filters Row -->
-        <div *ngIf="showFilters" class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-border">
-          <div>
-            <label class="block text-sm font-medium text-foreground mb-1">Priority</label>
-            <select [(ngModel)]="priorityFilter" class="w-full px-3 py-2 border border-border rounded-md text-sm bg-card">
-              <option value="all">All Priorities</option>
-              <option value="High">High Priority</option>
-              <option value="Medium">Medium Priority</option>
-              <option value="Low">Low Priority</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-foreground mb-1">Status</label>
-            <select [(ngModel)]="statusFilter" class="w-full px-3 py-2 border border-border rounded-md text-sm bg-card">
-              <option value="all">All Statuses</option>
-              <option value="New">New</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Query Sent">Query Sent</option>
-              <option value="Resolved">Resolved</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-foreground mb-1">Unit</label>
-            <select [(ngModel)]="unitFilter" class="w-full px-3 py-2 border border-border rounded-md text-sm bg-card">
-              <option value="all">All Units</option>
-              <option value="ICU">ICU</option>
-              <option value="Medicine">Medicine</option>
-              <option value="Surgery">Surgery</option>
-              <option value="Emergency">Emergency</option>
-            </select>
-          </div>
-          <div class="flex items-end">
-            <button 
-              class="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted"
-              (click)="clearFilters()"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cases Table -->
-      <div class="medical-card overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-muted">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Patient</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Diagnosis</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">DRG Info</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Flags</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Priority</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Impact</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-border">
-              <tr *ngFor="let case of filteredCases" class="hover:bg-muted/50">
-                <td class="px-4 py-4">
-                  <div>
-                    <div class="text-sm font-medium text-foreground">{{ case.patient }}</div>
-                    <div class="text-xs text-muted-foreground">MRN: {{ case.mrn }}</div>
-                    <div class="text-xs text-muted-foreground">{{ case.age }}{{ case.sex }} • LOS: {{ case.los }}d</div>
-                  </div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="text-sm text-foreground">{{ case.primaryDiagnosis }}</div>
-                  <div class="text-xs text-muted-foreground">Admit: {{ formatDate(case.admitDate) }}</div>
-                  <div class="text-xs text-muted-foreground">{{ case.unit }}</div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="text-xs">
-                    <div class="text-muted-foreground">Current: <span class="font-medium">{{ case.currentDrg }}</span></div>
-                    <div class="text-medical-secondary">Suggested: <span class="font-medium">{{ case.suggestedDrg }}</span></div>
-                  </div>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="space-y-1">
-                    <div *ngFor="let flag of case.flags" 
-                         [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs ' + getFlagClass(flag.severity)">
-                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path [attr.d]="getFlagIcon(flag.type)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                      </svg>
-                      {{ flag.text }}
-                    </div>
-                  </div>
-                </td>
-                <td class="px-4 py-4">
-                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getPriorityClass(case.priority)">
-                    {{ case.priority }}
-                  </span>
-                </td>
-                <td class="px-4 py-4">
-                  <div class="text-sm font-medium text-medical-secondary">{{ case.impact }}</div>
-                </td>
-                <td class="px-4 py-4">
-                  <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getStatusClass(case.status)">
-                    {{ case.status }}
-                  </span>
-                </td>
-                <td class="px-4 py-4">
-                  <button 
-                    class="inline-flex items-center px-3 py-1 text-xs bg-medical-primary text-white rounded-md hover:bg-medical-primary/90"
-                    (click)="viewCase(case.id)"
-                  >
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    Review
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-muted-foreground">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ getEndIndex() }} of {{ filteredCases.length }} cases
-        </div>
-        <div class="flex items-center gap-2">
-          <button 
-            class="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50"
-            [disabled]="currentPage === 1"
-            (click)="previousPage()"
-          >
-            Previous
-          </button>
-          <span class="text-sm text-muted-foreground">Page {{ currentPage }} of {{ totalPages }}</span>
-          <button 
-            class="px-3 py-1 text-sm border border-border rounded-md hover:bg-muted disabled:opacity-50"
-            [disabled]="currentPage === totalPages"
-            (click)="nextPage()"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem; }
-    .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
-    .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.25rem; }
-    .gap-2 { gap: 0.5rem; }
-    .gap-3 { gap: 0.75rem; }
-    .gap-4 { gap: 1rem; }
-    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .divide-y > :not([hidden]) ~ :not([hidden]) { border-top-width: 1px; }
-    .divide-border > :not([hidden]) ~ :not([hidden]) { border-color: var(--border); }
-    @media (min-width: 768px) {
-      .md\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    }
-  `]
+  imports: [CommonModule, FormsModule, CaseDetailsComponent],
+  templateUrl: './case-worklist.component.html',
+  styleUrls: ['./case-worklist.component.scss']
 })
-export class CaseWorklistComponent implements OnInit {
+export class CaseWorklistComponent implements OnInit, OnDestroy {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   searchTerm = '';
   priorityFilter = 'all';
   statusFilter = 'all';
   unitFilter = 'all';
+  assignedToFilter = 'all';
   showFilters = false;
-  currentPage = 1;
-  pageSize = 10;
+  filteredCases: Case[] = [];
+  allCases: Case[] = [];
+  selectedCaseId: string | null = null;
+  loading = false;
+  loadingMore = false;
+  hasMoreData = true;
+  pagination = {
+    total: 5,
+    page: 1,
+    limit: 25,
+    totalPages: 1
+  };
+  
+  // Sorting properties
+  sortField: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  
+  // Upload-related properties
+  showUploadDialog = false;
+  selectedFiles: File[] = [];
+  uploading = false;
+  uploadProgress = 0;
+  isDragOver = false;
+  fileValidationErrors: { [fileName: string]: string } = {};
+  validatingFiles = false;
+  
+  // Math and Object reference for template
+  Math = Math;
+  Object = Object;
+  
+  private subscriptions = new Subscription();
+  private searchSubject = new Subject<string>();
 
-  cases: CaseItem[] = [
-    {
-      id: 'MR-2024-001234',
-      patient: 'Sarah Martinez',
-      mrn: '123456789',
-      age: 67,
-      sex: 'F',
-      admitDate: '2024-07-05',
-      los: 3,
-      primaryDiagnosis: 'Pneumonia with Sepsis',
-      currentDrg: 'DRG 871',
-      suggestedDrg: 'DRG 870',
-      flags: [
-        { type: 'clinical', text: 'Sepsis criteria not documented', severity: 'high' },
-        { type: 'coding', text: 'MCC coding opportunity', severity: 'high' }
-      ],
-      priority: 'High',
-      impact: '+$2,400',
-      assignedTo: 'Dr. Johnson',
-      status: 'New',
-      unit: 'ICU'
-    },
-    {
-      id: 'MR-2024-001235',
-      patient: 'Robert Chen',
-      mrn: '123456790',
-      age: 72,
-      sex: 'M',
-      admitDate: '2024-07-04',
-      los: 4,
-      primaryDiagnosis: 'Acute Kidney Injury',
-      currentDrg: 'DRG 682',
-      suggestedDrg: 'DRG 681',
-      flags: [
-        { type: 'clinical', text: 'AKI severity not specified', severity: 'high' },
-        { type: 'compliance', text: 'POA indicator missing', severity: 'medium' }
-      ],
-      priority: 'High',
-      impact: '+$1,800',
-      assignedTo: 'Dr. Johnson',
-      status: 'In Progress',
-      unit: 'Medicine'
-    },
-    {
-      id: 'MR-2024-001236',
-      patient: 'Maria Rodriguez',
-      mrn: '123456791',
-      age: 58,
-      sex: 'F',
-      admitDate: '2024-07-06',
-      los: 2,
-      primaryDiagnosis: 'Heart Failure',
-      currentDrg: 'DRG 293',
-      suggestedDrg: 'DRG 291',
-      flags: [
-        { type: 'clinical', text: 'Ejection fraction not documented', severity: 'medium' }
-      ],
-      priority: 'Medium',
-      impact: '+$1,200',
-      assignedTo: 'Dr. Smith',
-      status: 'Query Sent',
-      unit: 'Medicine'
+  // Sample data that matches Figma design exactly
+  private getSampleCases(): Case[] {
+    return [
+      {
+        id: '1',
+        caseNumber: 'C001',
+        patientName: 'Linda Thompson',
+        mrn: '12345769',
+        age: 69,
+        sex: 'F',
+        admitDate: '2024-07-07',
+        dischargeDate: undefined,
+        lengthOfStay: 1,
+        primaryDiagnosis: 'Stroke',
+        secondaryDiagnoses: ['Neurology'],
+        currentDrg: 'DRG 064',
+        suggestedDrg: 'DRG 062',
+        drgWeight: 1.2,
+        financialImpact: 600,
+        formattedImpact: '+$600',
+        unit: 'Neurology',
+        room: '304A',
+        attendingPhysician: 'Dr. Smith',
+        assignedTo: 'Dr. Johnson',
+        priority: 'Low',
+        status: 'Completed',
+        flags: [
+          {
+            id: 'f1',
+            type: 'clinical',
+            text: 'Dysphagia assessment needed',
+            severity: 'medium',
+            dateCreated: new Date('2024-07-07'),
+            createdBy: 'Dr. Johnson'
+          }
+        ],
+        queries: [],
+        notes: '',
+        reviewNotes: '',
+        complianceScore: 85,
+        riskScore: 25,
+        lastReviewDate: new Date('2024-07-07'),
+        lastReviewedBy: 'Dr. Johnson',
+        dueDate: '2024-07-08',
+        escalated: false,
+        isActive: true,
+        createdAt: new Date('2024-07-07'),
+        updatedAt: new Date('2024-07-07'),
+        daysSinceAdmit: 1,
+        priorityScore: 1
+      },
+      {
+        id: '2',
+        caseNumber: 'C002',
+        patientName: 'Robert Chen',
+        mrn: '12345770',
+        age: 45,
+        sex: 'M',
+        admitDate: '2024-07-06',
+        dischargeDate: undefined,
+        lengthOfStay: 2,
+        primaryDiagnosis: 'Pneumonia',
+        secondaryDiagnoses: ['Respiratory'],
+        currentDrg: 'DRG 177',
+        suggestedDrg: 'DRG 175',
+        drgWeight: 1.5,
+        financialImpact: 1200,
+        formattedImpact: '+$1,200',
+        unit: 'Respiratory',
+        room: '205B',
+        attendingPhysician: 'Dr. Wilson',
+        assignedTo: 'Dr. Johnson',
+        priority: 'High',
+        status: 'In Progress',
+        flags: [
+          {
+            id: 'f2',
+            type: 'coding',
+            text: 'Severity documentation needed',
+            severity: 'high',
+            dateCreated: new Date('2024-07-06'),
+            createdBy: 'Dr. Johnson'
+          }
+        ],
+        queries: [
+          {
+            id: 'q1',
+            content: 'Please document severity of pneumonia',
+            sentTo: 'Dr. Wilson',
+            sentDate: new Date('2024-07-06'),
+            sentBy: 'Dr. Johnson',
+            status: 'Sent',
+            priority: 'High'
+          }
+        ],
+        notes: '',
+        reviewNotes: '',
+        complianceScore: 75,
+        riskScore: 45,
+        lastReviewDate: new Date('2024-07-06'),
+        lastReviewedBy: 'Dr. Johnson',
+        dueDate: '2024-07-08',
+        escalated: false,
+        isActive: true,
+        createdAt: new Date('2024-07-06'),
+        updatedAt: new Date('2024-07-06'),
+        daysSinceAdmit: 2,
+        priorityScore: 3
+      },
+      {
+        id: '3',
+        caseNumber: 'C003',
+        patientName: 'Maria Rodriguez',
+        mrn: '12345771',
+        age: 62,
+        sex: 'F',
+        admitDate: '2024-07-05',
+        dischargeDate: undefined,
+        lengthOfStay: 3,
+        primaryDiagnosis: 'Heart Failure',
+        secondaryDiagnoses: ['Cardiology'],
+        currentDrg: 'DRG 291',
+        suggestedDrg: 'DRG 292',
+        drgWeight: 1.8,
+        financialImpact: 800,
+        formattedImpact: '+$800',
+        unit: 'Cardiology',
+        room: '401C',
+        attendingPhysician: 'Dr. Martinez',
+        assignedTo: 'Dr. Johnson',
+        priority: 'Medium',
+        status: 'Query Sent',
+        flags: [
+          {
+            id: 'f3',
+            type: 'clinical',
+            text: 'Ejection fraction documentation',
+            severity: 'medium',
+            dateCreated: new Date('2024-07-05'),
+            createdBy: 'Dr. Johnson'
+          }
+        ],
+        queries: [
+          {
+            id: 'q2',
+            content: 'Please document ejection fraction',
+            sentTo: 'Dr. Martinez',
+            sentDate: new Date('2024-07-05'),
+            sentBy: 'Dr. Johnson',
+            status: 'Sent',
+            priority: 'Medium'
+          }
+        ],
+        notes: '',
+        reviewNotes: '',
+        complianceScore: 80,
+        riskScore: 35,
+        lastReviewDate: new Date('2024-07-05'),
+        lastReviewedBy: 'Dr. Johnson',
+        dueDate: '2024-07-08',
+        escalated: false,
+        isActive: true,
+        createdAt: new Date('2024-07-05'),
+        updatedAt: new Date('2024-07-05'),
+        daysSinceAdmit: 3,
+        priorityScore: 2
+      },
+      {
+        id: '4',
+        caseNumber: 'C004',
+        patientName: 'James Wilson',
+        mrn: '12345772',
+        age: 78,
+        sex: 'M',
+        admitDate: '2024-07-04',
+        dischargeDate: undefined,
+        lengthOfStay: 4,
+        primaryDiagnosis: 'Sepsis',
+        secondaryDiagnoses: ['ICU'],
+        currentDrg: 'DRG 870',
+        suggestedDrg: 'DRG 871',
+        drgWeight: 2.1,
+        financialImpact: 2400,
+        formattedImpact: '+$2,400',
+        unit: 'ICU',
+        room: '101A',
+        attendingPhysician: 'Dr. Brown',
+        assignedTo: 'Dr. Johnson',
+        priority: 'Critical',
+        status: 'New',
+        flags: [
+          {
+            id: 'f4',
+            type: 'compliance',
+            text: 'Organ dysfunction documentation',
+            severity: 'high',
+            dateCreated: new Date('2024-07-04'),
+            createdBy: 'Dr. Johnson'
+          }
+        ],
+        queries: [],
+        notes: '',
+        reviewNotes: '',
+        complianceScore: 70,
+        riskScore: 65,
+        lastReviewDate: new Date('2024-07-04'),
+        lastReviewedBy: 'Dr. Johnson',
+        dueDate: '2024-07-07',
+        escalated: true,
+        escalationReason: 'High financial impact',
+        isActive: true,
+        createdAt: new Date('2024-07-04'),
+        updatedAt: new Date('2024-07-04'),
+        daysSinceAdmit: 4,
+        priorityScore: 4
+      },
+      {
+        id: '5',
+        caseNumber: 'C005',
+        patientName: 'Sarah Davis',
+        mrn: '12345773',
+        age: 34,
+        sex: 'F',
+        admitDate: '2024-07-03',
+        dischargeDate: '2024-07-05',
+        lengthOfStay: 2,
+        primaryDiagnosis: 'Appendicitis',
+        secondaryDiagnoses: ['Surgery'],
+        currentDrg: 'DRG 338',
+        suggestedDrg: 'DRG 339',
+        drgWeight: 0.8,
+        financialImpact: 400,
+        formattedImpact: '+$400',
+        unit: 'Surgery',
+        room: '302B',
+        attendingPhysician: 'Dr. Lee',
+        assignedTo: 'Dr. Johnson',
+        priority: 'Low',
+        status: 'Completed',
+        flags: [],
+        queries: [],
+        notes: '',
+        reviewNotes: '',
+        complianceScore: 95,
+        riskScore: 15,
+        lastReviewDate: new Date('2024-07-05'),
+        lastReviewedBy: 'Dr. Johnson',
+        dueDate: '2024-07-06',
+        escalated: false,
+        isActive: false,
+        createdAt: new Date('2024-07-03'),
+        updatedAt: new Date('2024-07-05'),
+        daysSinceAdmit: 2,
+        priorityScore: 1
+      }
+    ];
+  }
+
+  constructor(private casesService: CasesService) {}
+
+  ngOnInit() {
+    // Initialize with sample data immediately for UI display
+    this.allCases = this.getSampleCases();
+    this.filteredCases = this.allCases;
+    this.pagination.total = this.allCases.length;
+    this.pagination.totalPages = Math.ceil(this.pagination.total / this.pagination.limit);
+
+    // Try to load real cases from backend, but fallback to sample data
+    this.loadCases();
+    
+    // Subscribe to loading$ observable
+    this.subscriptions.add(
+      this.casesService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
+
+    // Subscribe to search subject with debounce
+    this.subscriptions.add(
+      this.searchSubject.pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      ).subscribe(searchTerm => {
+        this.searchTerm = searchTerm;
+        this.filterCases();
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+  loadCases() {
+    this.loading = true;
+    
+    // Build filters object with current state
+    const filters: any = {
+      page: this.pagination.page,
+      limit: this.pagination.limit
+    };
+
+    // Add search filter
+    if (this.searchTerm.trim()) {
+      filters.search = this.searchTerm.trim();
     }
-  ];
 
-  ngOnInit() {}
-
-  get filteredCases(): CaseItem[] {
-    let filtered = this.cases;
-
-    // Search filter
-    if (this.searchTerm) {
-      filtered = filtered.filter(c => 
-        c.patient.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        c.mrn.includes(this.searchTerm) ||
-        c.primaryDiagnosis.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
-    }
-
-    // Priority filter
+    // Add other filters
     if (this.priorityFilter !== 'all') {
-      filtered = filtered.filter(c => c.priority === this.priorityFilter);
+      filters.priority = this.priorityFilter;
     }
-
-    // Status filter
     if (this.statusFilter !== 'all') {
-      filtered = filtered.filter(c => c.status === this.statusFilter);
+      filters.status = this.statusFilter;
     }
-
-    // Unit filter
     if (this.unitFilter !== 'all') {
-      filtered = filtered.filter(c => c.unit === this.unitFilter);
+      filters.unit = this.unitFilter;
+    }
+    if (this.assignedToFilter !== 'all') {
+      filters.assignedTo = this.assignedToFilter;
     }
 
-    return filtered;
+    // Add sorting
+    if (this.sortField) {
+      filters.sortBy = this.sortField;
+      filters.sortOrder = this.sortDirection.toUpperCase();
+    }
+
+    this.casesService.getCases(filters).subscribe({
+      next: (response) => {
+        if (response && response.success && response.data) {
+          this.filteredCases = response.data.cases || [];
+          this.allCases = response.data.cases || []; // Keep for compatibility
+          this.pagination = {
+            ...this.pagination,
+            ...response.data.pagination
+          };
+        } else {
+          // Fallback to sample data if no proper response from backend
+          this.allCases = this.getSampleCases();
+          this.filteredCases = this.allCases;
+          this.pagination.total = this.allCases.length;
+          this.pagination.totalPages = Math.ceil(this.pagination.total / this.pagination.limit);
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading cases:', error);
+        // Use sample data on error
+        this.allCases = this.getSampleCases();
+        this.filteredCases = this.allCases;
+        this.pagination.total = this.allCases.length;
+        this.pagination.totalPages = Math.ceil(this.pagination.total / this.pagination.limit);
+        this.loading = false;
+      }
+    });
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.filteredCases.length / this.pageSize);
+    onSearchChange(searchTerm: string) {
+    this.searchSubject.next(searchTerm);
   }
 
-  getEndIndex(): number {
-    return Math.min(this.currentPage * this.pageSize, this.filteredCases.length);
+  filterCases() {
+    // Reset to first page when filters change
+    this.pagination.page = 1;
+    // Trigger new API call with updated filters
+    this.loadCases();
   }
 
-  toggleFilters(): void {
-    this.showFilters = !this.showFilters;
+  private getSortValue(caseItem: Case, field: string): any {
+    switch (field) {
+      case 'patientName': return caseItem.patientName;
+      case 'admitDate': return new Date(caseItem.admitDate);
+      case 'primaryDiagnosis': return caseItem.primaryDiagnosis;
+      case 'financialImpact': return caseItem.financialImpact || 0;
+      case 'priority': return this.getPriorityOrder(caseItem.priority);
+      case 'status': return caseItem.status;
+      default: return '';
+    }
   }
 
-  clearFilters(): void {
+  private getPriorityOrder(priority: string): number {
+    switch (priority) {
+      case 'Critical': return 4;
+      case 'High': return 3;
+      case 'Medium': return 2;
+      case 'Low': return 1;
+      default: return 0;
+    }
+  }
+
+  sortBy(field: string) {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'asc';
+    }
+    // Reset to first page when sorting changes
+    this.pagination.page = 1;
+    // Trigger new API call with updated sorting
+    this.loadCases();
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
     this.priorityFilter = 'all';
     this.statusFilter = 'all';
     this.unitFilter = 'all';
-    this.searchTerm = '';
+    this.assignedToFilter = 'all';
+    this.sortField = '';
+    this.sortDirection = 'asc';
+    // Reset to first page when clearing filters
+    this.pagination.page = 1;
+    // Trigger new API call without filters
+    this.loadCases();
   }
 
-  viewCase(caseId: string): void {
-    console.log('Viewing case:', caseId);
-    // Navigate to case review
+  trackByCase(index: number, caseItem: Case): string {
+    return caseItem.id;
   }
 
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString();
+  openCase(caseId: string): void {
+    this.selectedCaseId = caseId;
   }
 
-  getPriorityClass(priority: string): string {
-    switch (priority) {
-      case 'High': return 'bg-medical-error text-white';
-      case 'Medium': return 'bg-medical-warning text-white';
-      case 'Low': return 'bg-medical-info text-white';
-      default: return 'bg-muted text-muted-foreground';
+  closeDetails(): void {
+    this.selectedCaseId = null;
+  }
+
+  getUserInitials(fullName: string): string {
+    return fullName
+      .split(' ')
+      .map(n => n.charAt(0).toUpperCase())
+      .join('');
+  }
+
+  // Upload Modal Methods
+  openUploadDialog(): void {
+    this.showUploadDialog = true;
+    this.selectedFiles = [];
+    this.uploadProgress = 0;
+    this.uploading = false;
+  }
+
+  closeUploadDialog(): void {
+    this.showUploadDialog = false;
+    this.selectedFiles = [];
+    this.uploadProgress = 0;
+    this.uploading = false;
+    this.isDragOver = false;
+    this.fileValidationErrors = {};
+    this.validatingFiles = false;
+  }
+
+  triggerFileSelect(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.addFiles(Array.from(input.files));
     }
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'New': return 'bg-medical-info text-white';
-      case 'In Progress': return 'bg-medical-warning text-white';
-      case 'Query Sent': return 'bg-medical-secondary text-white';
-      case 'Resolved': return 'bg-medical-success text-white';
-      default: return 'bg-muted text-muted-foreground';
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+    
+    if (event.dataTransfer?.files) {
+      this.addFiles(Array.from(event.dataTransfer.files));
     }
   }
 
-  getFlagClass(severity: string): string {
-    switch (severity) {
-      case 'high': return 'bg-medical-error-light text-medical-error';
-      case 'medium': return 'bg-medical-warning-light text-medical-warning';
-      case 'low': return 'bg-medical-info-light text-medical-info';
-      default: return 'bg-muted text-muted-foreground';
-    }
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = true;
   }
 
-  getFlagIcon(type: string): string {
-    switch (type) {
-      case 'clinical': return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-      case 'coding': return 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z';
-      case 'compliance': return 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z';
-      default: return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
-    }
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
   }
 
+    private addFiles(files: File[]): void {
+    this.validatingFiles = true;
+    this.fileValidationErrors = {};
+    
+    files.forEach(file => {
+      this.validateFile(file).then(isValid => {
+        if (isValid) {
+          // Check if file already exists
+          const existingIndex = this.selectedFiles.findIndex(f => f.name === file.name && f.size === file.size);
+          if (existingIndex === -1) {
+            this.selectedFiles = [...this.selectedFiles, file];
+          } else {
+            this.fileValidationErrors[file.name] = 'File already selected';
+          }
+        }
+        
+        // Check if all files have been processed
+        const totalFiles = files.length;
+        const processedFiles = Object.keys(this.fileValidationErrors).length + this.selectedFiles.filter(f => files.some(newFile => newFile.name === f.name)).length;
+        
+        if (processedFiles >= totalFiles) {
+          this.validatingFiles = false;
+        }
+      });
+    });
+  }
+
+  private async validateFile(file: File): Promise<boolean> {
+    // File type validation
+    const allowedTypes = ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const allowedExtensions = ['.txt', '.pdf', '.doc', '.docx'];
+    
+    const hasValidType = allowedTypes.includes(file.type) || 
+                        allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    
+    if (!hasValidType) {
+      this.fileValidationErrors[file.name] = 'Invalid file type. Only PDF, TXT, DOC, and DOCX files are allowed.';
+      return false;
+    }
+
+    // File size validation (max 50MB)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      this.fileValidationErrors[file.name] = 'File size too large. Maximum size is 50MB.';
+      return false;
+    }
+
+    // Minimum file size validation (at least 100 bytes)
+    if (file.size < 100) {
+      this.fileValidationErrors[file.name] = 'File is too small. Appears to be empty or corrupted.';
+      return false;
+    }
+
+    // Content validation for text files
+    if (file.type === 'text/plain' || file.name.toLowerCase().endsWith('.txt')) {
+      try {
+        const content = await this.readFileContent(file);
+        if (!this.validateMedicalRecordContent(content)) {
+          this.fileValidationErrors[file.name] = 'File does not appear to contain medical record data. Expected patient information, diagnoses, or medical terms.';
+          return false;
+        }
+      } catch (error) {
+        this.fileValidationErrors[file.name] = 'Unable to read file content. File may be corrupted.';
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private readFileContent(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  }
+
+  private validateMedicalRecordContent(content: string): boolean {
+    const medicalKeywords = [
+      // Patient identifiers
+      'patient', 'mrn', 'medical record', 'dob', 'date of birth',
+      // Medical terms
+      'diagnosis', 'symptoms', 'treatment', 'medication', 'prescription',
+      'doctor', 'physician', 'nurse', 'hospital', 'clinic',
+      // Common medical conditions
+      'pneumonia', 'diabetes', 'hypertension', 'heart failure', 'stroke',
+      'copd', 'sepsis', 'kidney', 'liver', 'cardiac', 'respiratory',
+      // Medical procedures
+      'surgery', 'procedure', 'operation', 'examination', 'lab', 'test',
+      'x-ray', 'ct scan', 'mri', 'ultrasound', 'biopsy',
+      // Medical units/departments
+      'icu', 'emergency', 'cardiology', 'neurology', 'oncology',
+      'orthopedic', 'pediatric', 'surgery', 'medicine',
+      // Common medical abbreviations
+      'bp', 'hr', 'temp', 'wbc', 'rbc', 'hgb', 'hct', 'icd', 'cpt'
+    ];
+
+    const contentLower = content.toLowerCase();
+    const wordCount = content.split(/\s+/).length;
+    
+    // Check if content is substantial (at least 50 words)
+    if (wordCount < 50) {
+      return false;
+    }
+
+    // Check for medical keywords (at least 3 different medical terms)
+    const foundKeywords = medicalKeywords.filter(keyword => 
+      contentLower.includes(keyword)
+    );
+
+    // Must contain at least 3 medical keywords and some structure
+    const hasEnoughMedicalTerms = foundKeywords.length >= 3;
+    const hasStructure = /patient|name|age|sex|diagnosis|admission|discharge/i.test(content);
+    
+    return hasEnoughMedicalTerms && hasStructure;
+  }
+
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+    uploadFiles(): void {
+    if (this.selectedFiles.length === 0) return;
+
+    this.uploading = true;
+    this.uploadProgress = 0;
+
+    // Upload files sequentially to the backend
+    this.uploadFilesSequentially(0);
+  }
+
+  private uploadFilesSequentially(index: number): void {
+    if (index >= this.selectedFiles.length) {
+      // All files uploaded, refresh cases and close dialog
+      this.uploading = false;
+      this.uploadProgress = 100;
+      this.loadCases(); // Refresh cases from backend
+      
+      setTimeout(() => {
+        this.closeUploadDialog();
+        console.log(`Successfully uploaded ${this.selectedFiles.length} medical record(s) and created cases`);
+      }, 500);
+      return;
+    }
+
+    const file = this.selectedFiles[index];
+    const startProgress = (index / this.selectedFiles.length) * 100;
+    const endProgress = ((index + 1) / this.selectedFiles.length) * 100;
+
+    this.casesService.uploadMedicalRecord(file).subscribe({
+      next: (response) => {
+        if (response.success) {
+          console.log(`Successfully uploaded ${file.name} and created case:`, response.data);
+          this.uploadProgress = endProgress;
+          
+          // Continue with next file
+          setTimeout(() => {
+            this.uploadFilesSequentially(index + 1);
+          }, 200);
+        }
+      },
+      error: (error) => {
+        console.error(`Error uploading ${file.name}:`, error);
+        
+        // Continue with next file even if one fails
+        this.uploadProgress = endProgress;
+        setTimeout(() => {
+          this.uploadFilesSequentially(index + 1);
+        }, 200);
+      }
+    });
+  }
+
+  
+
+  // Pagination Methods
   previousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
+    if (this.pagination.page > 1) {
+      this.pagination.page--;
+      this.loadCases();
     }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+    if (this.pagination.page < this.pagination.totalPages) {
+      this.pagination.page++;
+      this.loadCases();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.pagination.totalPages && page !== this.pagination.page) {
+      this.pagination.page = page;
+      this.loadCases();
     }
   }
 } 

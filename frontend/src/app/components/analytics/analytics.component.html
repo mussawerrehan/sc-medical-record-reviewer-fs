@@ -1,0 +1,285 @@
+<div class="analytics-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1>{{ getRoleBasedView().title }}</h1>
+        <p>Analytics and insights for clinical documentation improvement</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="customize-btn" (click)="isCustomizing = !isCustomizing">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+          </svg>
+          {{ isCustomizing ? 'Done' : 'Customize' }}
+        </button>
+        
+        <div class="export-dropdown">
+          <button class="export-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7,10 12,15 17,10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 12,15 18,9"/>
+            </svg>
+          </button>
+          <div class="export-menu">
+            <button (click)="handleExport('pdf')">Export as PDF</button>
+            <button (click)="handleExport('excel')">Export as Excel</button>
+            <button (click)="handleExport('csv')">Export as CSV</button>
+          </div>
+        </div>
+        
+        <button class="refresh-btn" (click)="loadAnalyticsData()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23,4 23,10 17,10"/>
+            <polyline points="1,20 1,14 7,14"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Panel -->
+  <div class="filters-panel">
+    <div class="filters-content">
+      <div class="filter-group">
+        <label>Date Range:</label>
+                 <input type="date" [value]="filters.dateRange.from.toISOString().split('T')[0]" (change)="onFromDateChange($event)">
+         <span>to</span>
+         <input type="date" [value]="filters.dateRange.to.toISOString().split('T')[0]" (change)="onToDateChange($event)">
+      </div>
+      
+      <div class="filter-group">
+        <label>Facility:</label>
+        <select [(ngModel)]="filters.facilities[0]" (change)="onFilterChange()">
+          <option *ngFor="let facility of facilities" [value]="facility">{{ facility }}</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label>Service Line:</label>
+        <select [(ngModel)]="filters.serviceLines[0]" (change)="onFilterChange()">
+          <option *ngFor="let service of serviceLines" [value]="service">{{ service }}</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label>User Role:</label>
+        <select [(ngModel)]="filters.userRole" (change)="onFilterChange()">
+          <option value="cdi-manager">CDI Manager</option>
+          <option value="compliance-officer">Compliance Officer</option>
+          <option value="executive">Executive</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinning">
+        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+      </svg>
+    </div>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    <!-- Metric Tiles -->
+    <div class="metrics-grid">
+      <div *ngFor="let metric of metricTiles" 
+           class="metric-tile" 
+           [class.clickable]="metric.drillDownData"
+           (click)="handleMetricClick(metric.id)">
+        <div class="metric-header">
+          <div class="metric-icon" [style.color]="getChangeColor(metric.changeType)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <h3>{{ metric.title }}</h3>
+        </div>
+        
+        <div class="metric-value">
+          <span class="value">{{ metric.value }}</span>
+          <span class="change" [style.color]="getChangeColor(metric.changeType)">
+            {{ metric.change }}
+          </span>
+        </div>
+        
+        <p class="metric-description">{{ metric.description }}</p>
+        
+        <div *ngIf="metric.target" class="metric-target">
+          Target: {{ metric.target }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <!-- DRG Impact Chart -->
+      <div *ngIf="visibleWidgets.drgImpactChart" class="chart-container">
+        <div class="chart-header">
+          <h3>DRG Impact Trends</h3>
+          <p>Monthly revenue impact from DRG optimization</p>
+        </div>
+        <div class="chart-content">
+          <div class="simple-bar-chart">
+            <div *ngFor="let item of drgImpactData" class="bar-item">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-container">
+                <div class="bar-bg">
+                  <div class="bar-fill" 
+                       [style.height.%]="((item.netRevenue || 0) / 800000) * 100"
+                       [style.background-color]="(item.netRevenue || 0) >= (item.target || 0) ? '#10b981' : '#f59e0b'">
+                  </div>
+                </div>
+                <span class="bar-value">{{ formatCurrency(item.netRevenue || 0) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Denial Reasons Chart -->
+      <div *ngIf="visibleWidgets.denialReasonsChart" class="chart-container">
+        <div class="chart-header">
+          <h3>Denial Reasons Breakdown</h3>
+          <p>Distribution of claim denial reasons</p>
+        </div>
+        <div class="chart-content">
+          <div class="pie-chart-simple">
+            <div *ngFor="let item of denialReasonsData" class="pie-item">
+              <div class="pie-color" [style.background-color]="item.fill"></div>
+              <span class="pie-label">{{ item.name }}</span>
+              <span class="pie-value">{{ formatPercentage(item.value || 0) }}</span>
+              <span class="pie-count">({{ item.count }})</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Query Trends Chart -->
+      <div *ngIf="visibleWidgets.queryTrendsChart" class="chart-container">
+        <div class="chart-header">
+          <h3>Query Performance Trends</h3>
+          <p>Physician query response and agreement rates</p>
+        </div>
+        <div class="chart-content">
+          <div class="line-chart-simple">
+            <div *ngFor="let item of queryTrendsData; let i = index" class="line-item">
+              <div class="line-label">{{ item.name }}</div>
+              <div class="line-metrics">
+                <div class="line-metric">
+                  <span class="metric-label">Queries:</span>
+                  <span class="metric-value">{{ item.queriesSent }}</span>
+                </div>
+                <div class="line-metric">
+                  <span class="metric-label">Response:</span>
+                  <span class="metric-value">{{ item.responseRate }}%</span>
+                </div>
+                <div class="line-metric">
+                  <span class="metric-label">Agreement:</span>
+                  <span class="metric-value">{{ item.agreementRate }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productivity Table -->
+      <div *ngIf="visibleWidgets.productivityChart" class="chart-container full-width">
+        <div class="chart-header">
+          <h3>CDI Specialist Productivity</h3>
+          <p>Performance metrics by CDI specialist</p>
+        </div>
+        <div class="chart-content">
+          <div class="productivity-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>CDI Specialist</th>
+                  <th>Cases Reviewed</th>
+                  <th>Queries Sent</th>
+                  <th>Acceptance Rate</th>
+                  <th>Efficiency Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let specialist of productivityData">
+                  <td class="specialist-name">{{ specialist.specialist }}</td>
+                  <td>{{ specialist.casesReviewed }}</td>
+                  <td>{{ specialist.queriesSent }}</td>
+                  <td>
+                    <div class="acceptance-rate">
+                      {{ formatPercentage(specialist.acceptanceRate) }}
+                      <div class="rate-indicator" 
+                           [class.good]="specialist.acceptanceRate >= 80"
+                           [class.warning]="specialist.acceptanceRate < 80 && specialist.acceptanceRate >= 70"
+                           [class.poor]="specialist.acceptanceRate < 70">
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="efficiency-badge" 
+                          [class.high]="specialist.efficiency >= 4.0"
+                          [class.medium]="specialist.efficiency >= 3.5 && specialist.efficiency < 4.0"
+                          [class.low]="specialist.efficiency < 3.5">
+                      {{ specialist.efficiency }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drill Down Modal -->
+  <div *ngIf="drillDownData" class="drill-down-overlay" (click)="closeDrillDown()">
+    <div class="drill-down-modal" (click)="$event.stopPropagation()">
+      <div class="drill-down-header">
+        <h2>{{ drillDownData.title }}</h2>
+        <button class="close-btn" (click)="closeDrillDown()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="drill-down-content">
+        <div class="drill-down-table">
+          <table>
+            <thead>
+              <tr>
+                <th *ngFor="let column of drillDownData.columns">
+                  {{ column | titlecase }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of drillDownData.data">
+                <td *ngFor="let column of drillDownData.columns">
+                  {{ row[column] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

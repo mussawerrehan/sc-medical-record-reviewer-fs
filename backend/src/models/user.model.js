@@ -63,26 +63,10 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 
 const User = mongoose.model('User', userSchema);
 
-// Create demo user if it doesn't exist
-const createDemoUser = async () => {
-  try {
-    const demoUser = await User.findOne({ username: 'demo' });
-    if (!demoUser) {
-      await User.create({
-        username: 'demo',
-        email: 'demo@smartcycle.ai',
-        password: 'SmartCyclePass',
-        name: 'Demo User',
-        role: 'user',
-        isActive: true
-      });
-      console.log('Demo user created successfully');
-    }
-  } catch (error) {
-    console.error('Error creating demo user:', error);
-  }
+const ROLES = {
+  ADMIN: 'admin',
+  USER: 'user',
+  PROVIDER: 'provider'
 };
 
-createDemoUser();
-
-module.exports = { User }; 
+module.exports = { User, ROLES }; 

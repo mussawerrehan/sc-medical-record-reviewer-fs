@@ -1,0 +1,11 @@
+/* App Component - Simplified Styles */
+
+/* Only basic styling needed since AppLayout handles most layout */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* Ensure proper routing display */
+router-outlet {
+  display: contents;
+} 

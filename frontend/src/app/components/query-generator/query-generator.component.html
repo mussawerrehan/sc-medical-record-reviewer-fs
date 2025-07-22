@@ -1,0 +1,284 @@
+<div class="query-generator-container">
+  <div class="query-generator-header">
+    <div class="header-content">
+      <div class="header-title">
+        <mat-icon>message</mat-icon>
+        <h2>Clinical Documentation Query Generator</h2>
+      </div>
+      <button mat-icon-button (click)="closeGenerator()" class="close-btn">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="case-context" *ngIf="caseData">
+      <div class="context-card">
+        <div class="context-header">
+          <mat-icon>folder_open</mat-icon>
+          <span>Current Case Context</span>
+        </div>
+        <div class="context-details">
+          <div class="context-item">
+            <strong>Patient:</strong> {{ caseData.patientName || 'N/A' }}
+          </div>
+          <div class="context-item">
+            <strong>Case ID:</strong> {{ caseData.id || 'N/A' }}
+          </div>
+          <div class="context-item">
+            <strong>Primary Diagnosis:</strong> {{ caseData.primaryDiagnosis || 'N/A' }}
+          </div>
+          <div class="context-item">
+            <strong>Current DRG:</strong> {{ caseData.currentDrg || 'N/A' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="query-generator-content">
+    <mat-tab-group [(selectedIndex)]="activeTab" class="query-tabs">
+      <!-- Generate Query Tab -->
+      <mat-tab label="Generate Query">
+        <div class="tab-content">
+          <div class="query-creation-section">
+            <!-- Template Selection -->
+            <mat-card class="template-section">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>template_nine</mat-icon>
+                  Query Templates
+                </mat-card-title>
+                <mat-card-subtitle>Select a pre-built template to get started</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="template-grid">
+                  <div 
+                    *ngFor="let template of queryTemplates" 
+                    class="template-card"
+                    [class.selected]="selectedTemplate?.id === template.id"
+                    (click)="selectTemplate(template)">
+                    <div class="template-header">
+                      <span class="template-name">{{ template.name }}</span>
+                      <span class="template-category">{{ template.category }}</span>
+                    </div>
+                    <div class="template-preview">
+                      {{ template.template.substring(0, 100) }}...
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Query Form -->
+            <mat-card class="query-form-section">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>edit</mat-icon>
+                  Query Details
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Recipient</mat-label>
+                    <mat-select [(value)]="recipient">
+                      <mat-option *ngFor="let recip of recipients" [value]="recip">
+                        {{ recip }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Category</mat-label>
+                    <mat-select [(value)]="queryCategory">
+                      <mat-option *ngFor="let category of categories" [value]="category">
+                        {{ category }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Priority</mat-label>
+                    <mat-select [(value)]="queryPriority">
+                      <mat-option value="high">High</mat-option>
+                      <mat-option value="medium">Medium</mat-option>
+                      <mat-option value="low">Low</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline" class="query-content-field">
+                  <mat-label>Query Content</mat-label>
+                  <textarea 
+                    matInput 
+                    [(ngModel)]="queryContent" 
+                    rows="12" 
+                    placeholder="Enter your query content here...">
+                  </textarea>
+                </mat-form-field>
+
+                <div class="ai-assistance">
+                  <button 
+                    mat-raised-button 
+                    color="accent" 
+                    (click)="generateAIQuery()"
+                    [disabled]="isGenerating">
+                    <mat-icon>auto_awesome</mat-icon>
+                    <span *ngIf="!isGenerating">Generate AI Suggestion</span>
+                    <span *ngIf="isGenerating">Generating...</span>
+                  </button>
+                  <span class="ai-help-text">Let AI help you create a professional query based on the case context</span>
+                </div>
+
+                <div class="form-actions">
+                  <button mat-button (click)="resetForm()" class="reset-btn">
+                    <mat-icon>refresh</mat-icon>
+                    Reset
+                  </button>
+                  <button mat-raised-button (click)="saveDraft()" class="save-btn">
+                    <mat-icon>save</mat-icon>
+                    Save Draft
+                  </button>
+                  <button 
+                    mat-raised-button 
+                    color="primary" 
+                    (click)="sendQuery()"
+                    [disabled]="!queryContent.trim() || !recipient">
+                    <mat-icon>send</mat-icon>
+                    Send Query
+                  </button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Recent Queries Tab -->
+      <mat-tab label="Recent Queries">
+        <div class="tab-content">
+          <div class="recent-queries-section">
+            <div class="section-header">
+              <h3>Recent Queries</h3>
+              <span class="query-count">{{ recentQueries.length }} queries</span>
+            </div>
+
+            <div class="queries-list">
+              <div *ngFor="let query of recentQueries" class="query-item">
+                <div class="query-header">
+                  <div class="query-meta">
+                    <span class="query-id">ID: {{ query.id }}</span>
+                    <span class="query-date">{{ query.createdAt | date:'MMM d, yyyy' }}</span>
+                  </div>
+                  <div class="query-status">
+                    <mat-icon [color]="getPriorityColor(query.priority)">{{ getStatusIcon(query.status) }}</mat-icon>
+                    <span class="status-text">{{ query.status | titlecase }}</span>
+                  </div>
+                </div>
+                
+                <div class="query-details">
+                  <div class="query-info">
+                    <div class="info-item">
+                      <strong>Recipient:</strong> {{ query.recipient }}
+                    </div>
+                    <div class="info-item">
+                      <strong>Category:</strong> {{ query.category }}
+                    </div>
+                    <div class="info-item">
+                      <strong>Priority:</strong> 
+                      <span [class]="'priority-' + query.priority">{{ query.priority | titlecase }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="query-content-preview">
+                  {{ query.content.substring(0, 150) }}...
+                </div>
+                
+                <div class="query-actions">
+                  <button mat-icon-button title="Copy Content">
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                  <button mat-icon-button title="Edit Query">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button title="View Full Query">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Help & Guidelines Tab -->
+      <mat-tab label="Help & Guidelines">
+        <div class="tab-content">
+          <div class="help-section">
+            <mat-card class="help-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>help</mat-icon>
+                  Query Best Practices
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="best-practices">
+                  <div class="practice-item">
+                    <mat-icon color="primary">check_circle</mat-icon>
+                    <div>
+                      <strong>Be Specific:</strong> Clearly state what information you need and why it's important for accurate coding.
+                    </div>
+                  </div>
+                  <div class="practice-item">
+                    <mat-icon color="primary">check_circle</mat-icon>
+                    <div>
+                      <strong>Professional Tone:</strong> Use courteous, professional language that encourages provider cooperation.
+                    </div>
+                  </div>
+                  <div class="practice-item">
+                    <mat-icon color="primary">check_circle</mat-icon>
+                    <div>
+                      <strong>Include Context:</strong> Provide relevant patient information and current documentation status.
+                    </div>
+                  </div>
+                  <div class="practice-item">
+                    <mat-icon color="primary">check_circle</mat-icon>
+                    <div>
+                      <strong>Set Deadlines:</strong> Include clear timeframes for response to ensure timely communication.
+                    </div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="help-card">
+              <mat-card-header>
+                <mat-card-title>
+                  <mat-icon>info</mat-icon>
+                  Query Categories
+                </mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="category-definitions">
+                  <div class="category-item">
+                    <strong>Documentation:</strong> Requests for additional or clarifying documentation
+                  </div>
+                  <div class="category-item">
+                    <strong>Clinical:</strong> Questions about clinical decision-making or condition severity
+                  </div>
+                  <div class="category-item">
+                    <strong>Coding:</strong> Clarifications needed for accurate ICD-10 or DRG assignment
+                  </div>
+                  <div class="category-item">
+                    <strong>Compliance:</strong> Queries related to regulatory or compliance requirements
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div> 

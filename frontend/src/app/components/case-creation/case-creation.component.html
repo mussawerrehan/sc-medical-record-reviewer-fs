@@ -1,0 +1,404 @@
+<div class="case-creation">
+  <!-- Header -->
+  <div class="creation-header">
+    <div class="header-content">
+      <h1>Create New Case</h1>
+      <p>Create a new case for patient medical record review</p>
+      
+      <!-- Progress Indicator -->
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+        </div>
+        <div class="progress-steps">
+          <div 
+            class="step" 
+            *ngFor="let title of sectionTitles; let i = index"
+            [class.active]="currentSection === i + 1"
+            [class.completed]="currentSection > i + 1"
+            (click)="goToSection(i + 1)">
+            <div class="step-number">{{ i + 1 }}</div>
+            <div class="step-title">{{ title }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="success">
+    <div class="success-content">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <h2>Case Created Successfully!</h2>
+      <p>Case has been created and assigned. Redirecting to case details...</p>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="error">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+      <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+      <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Case Creation Form -->
+  <div class="creation-form" *ngIf="!success">
+    <form [formGroup]="caseForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Section 1: Patient Selection -->
+      <div class="form-section" *ngIf="currentSection === 1">
+        <h2>Patient Selection</h2>
+        
+        <div class="member-search-section">
+          <div class="form-group">
+            <label for="memberSearch">Search for Patient/Member</label>
+            <input 
+              type="text" 
+              id="memberSearch" 
+              formControlName="memberSearch"
+              placeholder="Search by name, member ID, or email"
+              (input)="onMemberSearch($event.target.value)"
+              autocomplete="off">
+            
+            <!-- Search Results -->
+            <div class="search-results" *ngIf="filteredMembers.length > 0 && !selectedMember">
+              <div 
+                class="search-result-item" 
+                *ngFor="let member of filteredMembers"
+                (click)="selectMember(member)">
+                <div class="member-info">
+                  <div class="member-name">{{ member.firstName }} {{ member.lastName }}</div>
+                  <div class="member-details">
+                    <span>ID: {{ member.memberId }}</span>
+                    <span *ngIf="member.email">• {{ member.email }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selected Member Display -->
+            <div class="selected-member" *ngIf="selectedMember">
+              <div class="member-card">
+                <div class="member-header">
+                  <h3>{{ selectedMember.firstName }} {{ selectedMember.lastName }}</h3>
+                  <button type="button" class="change-btn" (click)="selectedMember = null; caseForm.patchValue({memberSearch: '', memberId: '', patientName: ''})">
+                    Change
+                  </button>
+                </div>
+                <div class="member-info-grid">
+                  <div class="info-item">
+                    <label>Member ID:</label>
+                    <span>{{ selectedMember.memberId }}</span>
+                  </div>
+                  <div class="info-item">
+                    <label>Gender:</label>
+                    <span>{{ selectedMember.gender === 'M' ? 'Male' : selectedMember.gender === 'F' ? 'Female' : 'Other' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <label>Date of Birth:</label>
+                    <span>{{ selectedMember.dateOfBirth | date }}</span>
+                  </div>
+                  <div class="info-item" *ngIf="selectedMember.insuranceProvider">
+                    <label>Insurance:</label>
+                    <span>{{ selectedMember.insuranceProvider }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row" *ngIf="selectedMember">
+          <div class="form-group">
+            <label for="mrn">Medical Record Number *</label>
+            <input 
+              type="text" 
+              id="mrn" 
+              formControlName="mrn"
+              [class.invalid]="isFieldInvalid('mrn')"
+              placeholder="Enter MRN">
+            <div class="error-text" *ngIf="isFieldInvalid('mrn')">
+              {{ getFieldError('mrn') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="age">Age *</label>
+            <input 
+              type="number" 
+              id="age" 
+              formControlName="age"
+              [class.invalid]="isFieldInvalid('age')"
+              placeholder="Age"
+              min="0"
+              max="150">
+            <div class="error-text" *ngIf="isFieldInvalid('age')">
+              {{ getFieldError('age') }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Medical Information -->
+      <div class="form-section" *ngIf="currentSection === 2">
+        <h2>Medical Information</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="admitDate">Admission Date *</label>
+            <input 
+              type="date" 
+              id="admitDate" 
+              formControlName="admitDate"
+              [class.invalid]="isFieldInvalid('admitDate')">
+            <div class="error-text" *ngIf="isFieldInvalid('admitDate')">
+              {{ getFieldError('admitDate') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="dischargeDate">Discharge Date</label>
+            <input 
+              type="date" 
+              id="dischargeDate" 
+              formControlName="dischargeDate">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="primaryDiagnosis">Primary Diagnosis *</label>
+          <textarea 
+            id="primaryDiagnosis" 
+            formControlName="primaryDiagnosis"
+            [class.invalid]="isFieldInvalid('primaryDiagnosis')"
+            placeholder="Enter primary diagnosis"
+            rows="3"></textarea>
+          <div class="error-text" *ngIf="isFieldInvalid('primaryDiagnosis')">
+            {{ getFieldError('primaryDiagnosis') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="secondaryDiagnoses">Secondary Diagnoses</label>
+          <textarea 
+            id="secondaryDiagnoses" 
+            formControlName="secondaryDiagnoses"
+            placeholder="Enter secondary diagnoses (comma-separated)"
+            rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- Section 3: Administrative Details -->
+      <div class="form-section" *ngIf="currentSection === 3">
+        <h2>Administrative Details</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="facility">Facility *</label>
+            <select 
+              id="facility" 
+              formControlName="facility"
+              [class.invalid]="isFieldInvalid('facility')">
+              <option value="">Select facility</option>
+              <option *ngFor="let facility of lookupOptions.facilities" [value]="facility">
+                {{ facility }}
+              </option>
+            </select>
+            <div class="error-text" *ngIf="isFieldInvalid('facility')">
+              {{ getFieldError('facility') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="serviceLine">Service Line *</label>
+            <select 
+              id="serviceLine" 
+              formControlName="serviceLine"
+              [class.invalid]="isFieldInvalid('serviceLine')">
+              <option value="">Select service line</option>
+              <option *ngFor="let serviceLine of lookupOptions.serviceLines" [value]="serviceLine">
+                {{ serviceLine }}
+              </option>
+            </select>
+            <div class="error-text" *ngIf="isFieldInvalid('serviceLine')">
+              {{ getFieldError('serviceLine') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="unit">Unit/Department *</label>
+            <input 
+              type="text" 
+              id="unit" 
+              formControlName="unit"
+              [class.invalid]="isFieldInvalid('unit')"
+              placeholder="Enter unit or department">
+            <div class="error-text" *ngIf="isFieldInvalid('unit')">
+              {{ getFieldError('unit') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="attendingPhysician">Attending Physician *</label>
+            <input 
+              type="text" 
+              id="attendingPhysician" 
+              formControlName="attendingPhysician"
+              [class.invalid]="isFieldInvalid('attendingPhysician')"
+              placeholder="Enter attending physician name">
+            <div class="error-text" *ngIf="isFieldInvalid('attendingPhysician')">
+              {{ getFieldError('attendingPhysician') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority *</label>
+          <select 
+            id="priority" 
+            formControlName="priority"
+            [class.invalid]="isFieldInvalid('priority')">
+            <option *ngFor="let priority of lookupOptions.priorities" [value]="priority">
+              {{ priority }}
+            </option>
+          </select>
+          <div class="error-text" *ngIf="isFieldInvalid('priority')">
+            {{ getFieldError('priority') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Notes & Attachments -->
+      <div class="form-section" *ngIf="currentSection === 4">
+        <h2>Notes & Attachments</h2>
+        
+        <div class="form-group">
+          <label for="notes">Initial Notes</label>
+          <textarea 
+            id="notes" 
+            formControlName="notes"
+            placeholder="Enter any initial notes for this case"
+            rows="4"></textarea>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="file-upload-section">
+          <h3>Attachments</h3>
+          <p>Upload medical records, lab results, or other relevant documents</p>
+          
+          <!-- Drop Zone -->
+          <div 
+            class="drop-zone"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)">
+            <div class="drop-content">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <p>Drag and drop files here or</p>
+              <button type="button" class="upload-btn" (click)="fileInput.click()">Browse Files</button>
+              <input 
+                #fileInput
+                type="file" 
+                multiple 
+                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xlsx,.xls"
+                (change)="onFileSelected($event)"
+                style="display: none;">
+            </div>
+          </div>
+
+          <!-- Selected Files -->
+          <div class="selected-files" *ngIf="selectedFiles.length > 0">
+            <h4>Selected Files ({{ selectedFiles.length }})</h4>
+            <div class="file-list">
+              <div class="file-item" *ngFor="let file of selectedFiles; let i = index">
+                <div class="file-info">
+                  <div class="file-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="file-details">
+                    <div class="file-name">{{ file.name }}</div>
+                    <div class="file-size">{{ formatFileSize(file.size) }}</div>
+                  </div>
+                </div>
+                <button type="button" class="remove-file" (click)="removeFile(i)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="form-navigation">
+        <button 
+          type="button" 
+          class="btn-secondary" 
+          *ngIf="currentSection > 1"
+          (click)="previousSection()">
+          Previous
+        </button>
+        
+        <div class="nav-spacer"></div>
+        
+        <button 
+          type="button" 
+          class="btn-outline" 
+          (click)="resetForm()">
+          Reset
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn-primary" 
+          *ngIf="currentSection < totalSections"
+          (click)="nextSection()"
+          [disabled]="!isCurrentSectionValid()">
+          Next
+        </button>
+        
+        <button 
+          type="submit" 
+          class="btn-primary"
+          *ngIf="currentSection === totalSections"
+          [disabled]="!caseForm.valid || submitting">
+          <span *ngIf="!submitting">Create Case</span>
+          <span *ngIf="submitting">
+            <svg class="spinning" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.49 8.49l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.49-8.49l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Creating...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="loading-content">
+      <svg class="spinning" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.49 8.49l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.49-8.49l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p>Loading...</p>
+    </div>
+  </div>
+</div> 
