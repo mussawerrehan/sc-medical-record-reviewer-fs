@@ -15,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadChildren: () => import('./components/dashboard/dashboard.module').then(m => m.DashboardModule),
+    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [AuthGuard]
   },
   {
@@ -24,21 +24,54 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'hospitals',
-    loadChildren: () => import('./components/hospitals/hospitals.module').then(m => m.HospitalsModule),
+    path: 'compliance',
+    loadComponent: () => import('./components/compliance-checker/compliance-checker.component').then(m => m.ComplianceCheckerComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'analytics',
+    loadComponent: () => import('./components/analytics/analytics.component').then(m => m.AnalyticsComponent),
     canActivate: [AuthGuard],
-    data: { roles: [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN] }
+    data: { title: 'Analytics' }
+  },
+  {
+    path: 'ai-assistant',
+    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard],
+    data: { title: 'AI Assistant' }
+  },
+  {
+    path: 'batch-monitoring',
+    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard],
+    data: { title: 'Batch Monitoring' }
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard],
+    data: { roles: [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN], title: 'Admin Panel' }
+  },
+  {
+    path: 'case-review',
+    loadComponent: () => import('./components/case-details/case-details.component').then(m => m.CaseDetailsComponent),
+    canActivate: [AuthGuard]
+  },
+  // Legacy routes for backward compatibility
+  {
+    path: 'hospitals',
+    redirectTo: 'admin',
+    pathMatch: 'full'
   },
   {
     path: 'providers',
-    loadChildren: () => import('./components/providers/providers.module').then(m => m.ProvidersModule),
-    canActivate: [AuthGuard],
-    data: { roles: [UserRole.SUPER_ADMIN, UserRole.HOSPITAL_ADMIN] }
+    redirectTo: 'admin',
+    pathMatch: 'full'
   },
   {
     path: 'profile',
-    loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfileModule),
-    canActivate: [AuthGuard]
+    redirectTo: 'admin',
+    pathMatch: 'full'
   },
   {
     path: '**',

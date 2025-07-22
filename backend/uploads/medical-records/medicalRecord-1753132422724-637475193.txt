@@ -1,0 +1,187 @@
+REGIONAL TRAUMA CENTER
+ORTHOPEDIC SURGERY CLINICAL DOCUMENTATION
+
+=====================================
+PATIENT INFORMATION
+=====================================
+Patient Name: Sarah Johnson
+Medical Record Number: MRN-567890123
+Date of Birth: February 14, 1985 (Age: 39)
+Sex: Female
+Address: 3421 Maple Lane, Phoenix, AZ 85001
+Phone: (602) 555-0286
+Insurance: United Healthcare - Policy #UH567890123
+
+=====================================
+ADMISSION DETAILS
+=====================================
+Admission Date: January 25, 2025
+Admission Time: 22:15 hours
+Admission Type: Emergency/Trauma
+Chief Complaint: Right ankle pain after fall
+Attending Physician: Dr. Mark Rodriguez, MD
+Admitting Service: Orthopedic Surgery
+Room Number: ORTHO-245
+
+=====================================
+PRESENT ILLNESS
+=====================================
+Ms. Johnson is a 39-year-old female who presents to the emergency department after sustaining a fall while hiking. The patient reports she was descending a rocky trail when she lost her footing and fell, landing awkwardly on her right foot with immediate severe pain and inability to bear weight. She denies loss of consciousness, head injury, or other injuries. EMS transported her to the hospital with the right ankle splinted.
+
+The patient describes severe pain (9/10) in the right ankle with associated swelling and deformity.
+
+=====================================
+PAST MEDICAL HISTORY
+=====================================
+- No significant past medical history
+- No previous surgeries
+- No known drug allergies
+- Medications: None
+- Social history: Occasional alcohol use, non-smoker, active lifestyle
+
+=====================================
+PHYSICAL EXAMINATION
+=====================================
+Vital Signs:
+- Blood Pressure: 125/78 mmHg
+- Heart Rate: 95 bpm, regular
+- Respiratory Rate: 18/min
+- Temperature: 98.4°F (36.9°C)
+- Pain Score: 9/10
+
+General: Alert, oriented, in significant pain
+
+Right Lower Extremity:
+- Obvious deformity of right ankle
+- Significant swelling and ecchymosis
+- Tender to palpation over lateral malleolus and medial malleolus
+- Decreased sensation over dorsum of foot
+- Capillary refill <2 seconds
+- Dorsalis pedis and posterior tibial pulses palpable
+- Unable to bear weight
+
+Left Lower Extremity: Normal
+
+=====================================
+DIAGNOSTIC STUDIES
+=====================================
+Right Ankle X-rays (AP, Lateral, Mortise views):
+- Bimalleolar fracture with lateral displacement
+- Fracture of lateral malleolus (Weber B type)
+- Fracture of medial malleolus
+- Talar shift noted
+- No signs of open fracture
+
+CT Scan Right Ankle:
+- Confirms bimalleolar fracture
+- No intra-articular fragments
+- No posterior malleolar involvement
+
+Laboratory Results:
+- WBC: 7,200/μL
+- Hemoglobin: 13.5 g/dL
+- Platelets: 285,000/μL
+- PT/INR: 12.2/1.0
+- Basic metabolic panel: Within normal limits
+
+=====================================
+ASSESSMENT AND PLAN
+=====================================
+Primary Diagnosis: Closed bimalleolar ankle fracture, right
+- Unstable ankle fracture requiring surgical fixation
+- Risk for post-traumatic arthritis if not properly reduced
+
+Surgical Plan:
+- Open reduction internal fixation (ORIF) of bimalleolar ankle fracture
+- Lateral plate and screw fixation for fibula
+- Tension band wire or screw fixation for medial malleolus
+
+Pre-operative:
+- NPO after midnight
+- Ancef 1g IV pre-operatively
+- DVT prophylaxis
+- Pain control with morphine PCA
+
+=====================================
+OPERATIVE PROCEDURE
+=====================================
+Date of Surgery: January 26, 2025
+Surgeon: Dr. Mark Rodriguez, MD
+Assistant: Dr. Jennifer Liu, MD
+Anesthesia: Spinal anesthesia
+
+Procedure: Open reduction internal fixation of right bimalleolar ankle fracture
+
+OPERATIVE TECHNIQUE:
+The patient was positioned supine with a bump under the ipsilateral hip. A thigh tourniquet was applied. The right lower extremity was prepped and draped in sterile fashion.
+
+A lateral approach was made over the fibula. The fracture was identified and reduced anatomically. A 6-hole one-third tubular plate was applied with cortical screws achieving excellent fixation.
+
+A medial approach was then made over the medial malleolus. The fracture was reduced and fixed with two 4.0mm partially threaded cancellous screws with washers. Excellent reduction was confirmed under fluoroscopy.
+
+The wounds were irrigated and closed in layers. A short leg splint was applied.
+
+Estimated blood loss: 75mL
+Complications: None
+
+=====================================
+POSTOPERATIVE COURSE
+=====================================
+Day 1: Patient tolerated surgery well. Pain controlled with oral medications. DVT prophylaxis continued. Physical therapy evaluation for non-weight bearing transfers.
+
+Day 2: Patient comfortable, afebrile. Able to perform transfers safely. Discharge planning initiated.
+
+=====================================
+DISCHARGE INFORMATION
+=====================================
+Discharge Date: January 27, 2025
+Discharge Disposition: Home
+Length of Stay: 2 days
+Discharge Condition: Stable
+
+Weight-bearing Status: Non-weight bearing right lower extremity x 6 weeks
+
+Discharge Medications:
+- Oxycodone 5mg q4-6h PRN pain
+- Ibuprofen 600mg q6h with food
+- Colace 100mg twice daily
+
+Discharge Instructions:
+- Keep incisions clean and dry
+- Non-weight bearing on right leg for 6 weeks
+- Use crutches or walker for mobility
+- Ice and elevation to reduce swelling
+- Return if signs of infection, severe pain, or numbness
+
+Follow-up:
+- Orthopedic surgery clinic in 2 weeks for suture removal and X-rays
+- Physical therapy to begin at 6 weeks post-op
+
+=====================================
+POSTOPERATIVE DIAGNOSIS
+=====================================
+Right bimalleolar ankle fracture, status post ORIF
+
+=====================================
+COMPLICATIONS
+=====================================
+None
+
+=====================================
+PROGNOSIS
+=====================================
+Good with appropriate compliance with weight-bearing restrictions and follow-up care. Expected return to full activity in 3-4 months.
+
+=====================================
+CODING INFORMATION
+=====================================
+Principal Diagnosis: S82.841A - Displaced bimalleolar fracture of right lower leg, initial encounter for closed fracture
+
+Principal Procedure: 0QSG04Z - Reposition Right Fibula with Internal Fixation Device, Open Approach
+
+Secondary Procedure: 0QSH04Z - Reposition Right Tibia with Internal Fixation Device, Open Approach
+
+DRG: 564 - Other Musculoskeletal System and Connective Tissue Procedures with CC
+
+Attending Surgeon: Dr. Mark Rodriguez, MD
+Date of Documentation: January 27, 2025 

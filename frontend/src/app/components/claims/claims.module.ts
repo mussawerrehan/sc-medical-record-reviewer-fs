@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ClaimsListComponent } from './claims-list/claims-list.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ClaimsListComponent
+    loadComponent: () => import('../case-worklist/case-worklist.component').then(m => m.CaseWorklistComponent)
   },
   {
     path: 'new',

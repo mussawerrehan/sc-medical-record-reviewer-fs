@@ -1,0 +1,165 @@
+ST. MARY'S COMMUNITY HOSPITAL
+INTERNAL MEDICINE CLINICAL RECORD
+
+=====================================
+PATIENT INFORMATION
+=====================================
+Patient Name: Dorothy Williams
+Medical Record Number: MRN-234567890
+Date of Birth: November 8, 1938 (Age: 86)
+Sex: Female
+Address: 892 Elm Street, Boston, MA 02118
+Phone: (617) 555-0341
+Insurance: Medicare Part A & B - ID #234567890A
+
+=====================================
+ADMISSION DETAILS
+=====================================
+Admission Date: January 22, 2025
+Admission Time: 16:45 hours
+Admission Type: Emergency
+Chief Complaint: Cough, fever, and difficulty breathing
+Attending Physician: Dr. Patricia Chen, MD
+Admitting Service: Internal Medicine
+Room Number: MED-218
+
+=====================================
+PRESENT ILLNESS
+=====================================
+Mrs. Williams is an 86-year-old female with a history of COPD and atrial fibrillation who presents with a 3-day history of worsening productive cough with yellow-green sputum, fever up to 101.8°F, and increasing dyspnea. She reports decreased oral intake and increased fatigue. Her daughter states the patient has been more confused over the past 24 hours. The patient denies chest pain but reports feeling "heavy" in her chest.
+
+=====================================
+PAST MEDICAL HISTORY
+=====================================
+- Chronic Obstructive Pulmonary Disease (COPD)
+- Atrial fibrillation on anticoagulation
+- Hypertension
+- Osteoarthritis
+- History of smoking (quit 15 years ago, 40-pack-year history)
+- Allergies: Penicillin (rash)
+
+Current Medications:
+- Albuterol inhaler 2 puffs q4h PRN
+- Tiotropium 18mcg daily
+- Warfarin 5mg daily
+- Metoprolol 25mg twice daily
+- Lisinopril 10mg daily
+
+=====================================
+PHYSICAL EXAMINATION
+=====================================
+Vital Signs:
+- Blood Pressure: 145/88 mmHg
+- Heart Rate: 110 bpm, irregularly irregular
+- Respiratory Rate: 28/min
+- Temperature: 101.2°F (38.4°C)
+- Oxygen Saturation: 88% on room air, 94% on 2L NC
+- Weight: 142 lbs
+
+General: Elderly female appearing acutely ill, mildly confused
+HEENT: Dry mucous membranes, no lymphadenopathy
+Cardiovascular: Irregular rate and rhythm, no murmurs
+Pulmonary: Diminished breath sounds bilaterally, crackles in right lower lobe, bronchial breath sounds over right lower chest
+Abdomen: Soft, non-tender, bowel sounds present
+Extremities: No edema, warm and well perfused
+Neuro: Alert but confused to time, responds appropriately to questions
+
+=====================================
+DIAGNOSTIC STUDIES
+=====================================
+Chest X-ray: Right lower lobe consolidation consistent with pneumonia
+
+Laboratory Results:
+- WBC: 14,800/μL with left shift (85% neutrophils)
+- Hemoglobin: 11.2 g/dL
+- Platelets: 185,000/μL
+- BUN: 28 mg/dL
+- Creatinine: 1.4 mg/dL
+- Glucose: 165 mg/dL
+- Procalcitonin: 2.8 ng/mL (elevated)
+
+Arterial Blood Gas (on 2L O2):
+- pH: 7.42
+- pCO2: 45 mmHg
+- pO2: 68 mmHg
+- HCO3: 24 mEq/L
+
+Sputum Culture: Pending
+Blood Cultures x2: Pending
+
+=====================================
+ASSESSMENT AND PLAN
+=====================================
+Primary Diagnosis: Community-acquired pneumonia, right lower lobe
+Secondary Diagnoses:
+- Acute respiratory failure
+- COPD exacerbation
+- Atrial fibrillation
+- Acute kidney injury
+
+CURB-65 Score: 3 (Confusion, BUN >19, RR >30, BP <90, Age >65)
+
+Treatment Plan:
+1. Antibiotics: Ceftriaxone 1g IV daily + Azithromycin 500mg IV daily
+2. Oxygen therapy to maintain SpO2 >90%
+3. Bronchodilators: Albuterol/Ipratropium nebulizers q6h
+4. Supportive care: IV fluids, electrolyte monitoring
+5. Continue anticoagulation with warfarin
+6. DVT prophylaxis with sequential compression devices
+7. Monitor renal function
+
+=====================================
+HOSPITAL COURSE
+=====================================
+Day 1: Patient admitted to medical ward. Started on antibiotics and oxygen therapy. Sputum culture positive for Streptococcus pneumoniae sensitive to ceftriaxone.
+
+Day 2-3: Gradual improvement in oxygen saturation and respiratory symptoms. Mental status clearing. Able to wean oxygen to 1L NC.
+
+Day 4: Significant improvement. Off supplemental oxygen, ambulating with assistance. Switched to oral antibiotics.
+
+Day 5: Ready for discharge home with services.
+
+=====================================
+DISCHARGE INFORMATION
+=====================================
+Discharge Date: January 27, 2025
+Discharge Disposition: Home with home health services
+Length of Stay: 5 days
+Discharge Condition: Stable, improved
+
+Discharge Medications:
+- Amoxicillin/Clavulanate 875mg twice daily x 5 more days
+- Resume all home medications
+- Prednisone 40mg daily x 5 days, then taper
+
+Home Services:
+- Visiting nurse for medication compliance and monitoring
+- Physical therapy evaluation
+
+Follow-up:
+- Primary care in 1 week
+- Pulmonology in 2 weeks
+- Repeat chest X-ray in 6 weeks
+
+=====================================
+DISCHARGE INSTRUCTIONS
+=====================================
+- Complete full course of antibiotics
+- Use rescue inhaler as needed
+- Maintain good hydration
+- Return if fever, worsening shortness of breath, or confusion
+- Pneumonia vaccination discussed (patient declined previously)
+
+=====================================
+CODING INFORMATION
+=====================================
+Principal Diagnosis: J15.9 - Unspecified bacterial pneumonia
+Secondary Diagnoses:
+- J44.0 - Chronic obstructive pulmonary disease with acute lower respiratory infection
+- I48.91 - Unspecified atrial fibrillation
+- N17.9 - Acute kidney failure, unspecified
+
+DRG: 194 - Simple Pneumonia and Pleurisy with CC
+
+Attending Physician: Dr. Patricia Chen, MD
+Date of Documentation: January 27, 2025 

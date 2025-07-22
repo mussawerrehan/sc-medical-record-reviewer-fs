@@ -1,0 +1,142 @@
+CENTRAL MEDICAL HOSPITAL
+CLINICAL DOCUMENTATION REPORT
+
+=====================================
+PATIENT INFORMATION
+=====================================
+Patient Name: Jennifer Martinez
+Medical Record Number: MRN-789456123
+Date of Birth: March 15, 1965 (Age: 59)
+Sex: Female
+Address: 2453 Oak Street, Springfield, IL 62701
+Phone: (217) 555-0192
+Insurance: Blue Cross Blue Shield - Policy #BC789456123
+
+=====================================
+ADMISSION DETAILS
+=====================================
+Admission Date: January 15, 2025
+Admission Time: 14:30 hours
+Admission Type: Emergency
+Chief Complaint: Chest pain and shortness of breath
+Attending Physician: Dr. Robert Harrison, MD
+Admitting Service: Cardiology
+Room Number: CCU-204
+
+=====================================
+PRESENT ILLNESS
+=====================================
+Ms. Martinez is a 59-year-old female with a history of hypertension and diabetes mellitus type 2 who presents to the emergency department with acute onset chest pain. The patient describes the pain as crushing, substernal, and radiating to the left arm and jaw. The pain began approximately 2 hours prior to presentation while she was at rest. Associated symptoms include diaphoresis, nausea, and shortness of breath.
+
+=====================================
+PAST MEDICAL HISTORY
+=====================================
+- Hypertension (diagnosed 2010)
+- Diabetes Mellitus Type 2 (diagnosed 2015)
+- Hyperlipidemia
+- Family history of coronary artery disease (father deceased at age 62 from MI)
+- No known drug allergies
+
+=====================================
+PHYSICAL EXAMINATION
+=====================================
+Vital Signs:
+- Blood Pressure: 158/92 mmHg
+- Heart Rate: 98 bpm, regular
+- Respiratory Rate: 22/min
+- Temperature: 98.6°F (37.0°C)
+- Oxygen Saturation: 94% on room air
+
+General: Patient appears anxious and diaphoretic
+Cardiovascular: S1, S2 present, no murmurs, rubs, or gallops
+Pulmonary: Bilateral crackles at lung bases
+Abdomen: Soft, non-tender, non-distended
+
+=====================================
+DIAGNOSTIC STUDIES
+=====================================
+ECG: ST-elevation in leads II, III, aVF consistent with inferior STEMI
+Chest X-ray: Mild pulmonary edema
+Troponin I: 15.2 ng/mL (elevated)
+CK-MB: 45 ng/mL (elevated)
+BNP: 890 pg/mL (elevated)
+
+Laboratory Results:
+- WBC: 11,200/μL
+- Hemoglobin: 12.8 g/dL
+- Platelets: 245,000/μL
+- Creatinine: 1.2 mg/dL
+- Glucose: 185 mg/dL
+- Total Cholesterol: 240 mg/dL
+
+=====================================
+ASSESSMENT AND PLAN
+=====================================
+Primary Diagnosis: ST-Elevation Myocardial Infarction (STEMI), Inferior Wall
+Secondary Diagnoses:
+- Acute systolic heart failure
+- Diabetes mellitus type 2, uncontrolled
+- Hypertension
+
+Treatment Plan:
+1. Emergent cardiac catheterization and PCI
+2. Dual antiplatelet therapy (aspirin, clopidogrel)
+3. Beta-blocker (metoprolol)
+4. ACE inhibitor (lisinopril)
+5. Statin therapy (atorvastatin)
+6. Insulin sliding scale for glucose control
+7. Continuous cardiac monitoring
+
+=====================================
+PROCEDURES PERFORMED
+=====================================
+Date: January 15, 2025
+Procedure: Percutaneous Coronary Intervention (PCI)
+Operator: Dr. Sarah Kim, Interventional Cardiology
+Findings: 95% occlusion of right coronary artery
+Intervention: Drug-eluting stent placement
+Complications: None
+
+=====================================
+HOSPITAL COURSE
+=====================================
+Day 1-2: Patient underwent successful PCI with stent placement to RCA. Post-procedure course uncomplicated. Cardiac enzymes trending down. Echo shows EF 45%.
+
+Day 3: Patient stable, chest pain resolved. Initiated cardiac rehabilitation consultation.
+
+=====================================
+DISCHARGE INFORMATION
+=====================================
+Discharge Date: January 18, 2025
+Discharge Disposition: Home with follow-up
+Length of Stay: 3 days
+Discharge Condition: Stable
+
+Discharge Medications:
+- Aspirin 81mg daily
+- Clopidogrel 75mg daily
+- Metoprolol 50mg twice daily
+- Lisinopril 10mg daily
+- Atorvastatin 40mg daily
+- Metformin 1000mg twice daily
+
+Follow-up:
+- Cardiology clinic in 1 week
+- Primary care in 2 weeks
+- Cardiac rehabilitation enrollment
+
+=====================================
+CODING INFORMATION
+=====================================
+Principal Diagnosis: I21.19 - ST elevation myocardial infarction involving other coronary artery
+Secondary Diagnoses:
+- I50.9 - Heart failure, unspecified
+- E11.9 - Type 2 diabetes mellitus without complications
+- I10 - Essential hypertension
+
+Principal Procedure: 02703ZZ - Dilation of Coronary Artery, One Artery with Drug-eluting Intraluminal Device, Percutaneous Approach
+
+DRG: 247 - Percutaneous Cardiovascular Procedure with Drug-Eluting Stent with MCC
+
+Attending Physician: Dr. Robert Harrison, MD
+Date of Documentation: January 18, 2025 

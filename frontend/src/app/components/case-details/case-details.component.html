@@ -1,0 +1,279 @@
+<div class="case-review-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Worklist
+      </button>
+      <div class="header-info">
+        <h1 class="case-title">Case Review</h1>
+        <p class="patient-info">
+          {{ selectedCase?.patientName || 'Sarah Martinez' }} • MRN: {{ selectedCase?.mrn || '123456789' }}
+        </p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="nav-btn">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Previous Case
+      </button>
+      <button class="nav-btn">
+        Next Case
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" *ngIf="selectedCase">
+    <!-- Left Sidebar - Patient Summary -->
+    <div class="sidebar-left">
+      <div class="patient-card">
+        <div class="card-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          Patient Summary
+        </div>
+        <div class="card-content">
+          <div class="patient-info-section">
+            <h4 class="patient-name">{{ selectedCase?.patientName }}</h4>
+            <p class="patient-details">{{ selectedCase?.age }} years old, {{ selectedCase?.sex }}</p>
+            <p class="patient-details">DOB: {{ getFormattedDate(selectedCase?.admitDate || '') }}</p>
+            <p class="patient-details">MRN: {{ selectedCase?.mrn }}</p>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="encounter-section">
+            <h4 class="section-title">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3m-3 0h6m12 0v-4m0 0V8a2 2 0 00-2-2h-2m2 2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v3"></path>
+              </svg>
+              Encounter Details
+            </h4>
+            <div class="detail-list">
+              <p>Admitted: {{ getFormattedDate(selectedCase?.admitDate || '') }}</p>
+              <p>Length of Stay: {{ selectedCase?.lengthOfStay }} days</p>
+              <p>Department: {{ selectedCase?.unit }}</p>
+              <p>Room: {{ selectedCase?.room }}</p>
+              <p>Attending: {{ selectedCase?.attendingPhysician }}</p>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="drg-section">
+            <h4 class="section-title">DRG Analysis</h4>
+            <div class="drg-info">
+              <div class="drg-item">
+                <span class="drg-label">Current:</span>
+                <span class="drg-value">{{ selectedCase?.currentDrg }}</span>
+              </div>
+              <div class="drg-item">
+                <span class="drg-label">Suggested:</span>
+                <span class="drg-value">{{ selectedCase?.suggestedDrg }}</span>
+              </div>
+              <div class="drg-impact">
+                Potential Impact: +${{ selectedCase?.financialImpact || 0 }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="severity-section">
+            <h4 class="section-title">Severity Scores</h4>
+            <div class="severity-info">
+              <p>SOI: {{ selectedCase?.complianceScore || 3 }}/4</p>
+              <p>ROM: {{ selectedCase?.riskScore || 2 }}/4</p>
+              <span [ngClass]="'priority-badge priority-' + (selectedCase?.priority?.toLowerCase() || 'medium')">
+                {{ selectedCase?.priority || 'Medium' }} Priority
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center - Documentation Issues -->
+    <div class="main-panel">
+      <div class="issues-card">
+        <div class="card-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Documentation Issues & Recommendations
+        </div>
+        <div class="card-subtitle">
+          {{ documentationIssues.length }} issues identified requiring attention
+        </div>
+        <div class="card-content">
+          <div class="issues-list">
+            <div 
+              *ngFor="let issue of documentationIssues" 
+              class="issue-item"
+              [class.expanded]="selectedIssue?.id === issue.id"
+              (click)="selectIssue(issue)"
+            >
+              <div class="issue-header">
+                <div class="issue-icon">
+                  <svg *ngIf="issue.type === 'clinical'" class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <svg *ngIf="issue.type === 'coding'" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                  </svg>
+                  <svg *ngIf="issue.type === 'compliance'" class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                  </svg>
+                </div>
+                <div class="issue-content">
+                  <div class="issue-title-row">
+                    <span class="issue-title">{{ issue.title }}</span>
+                    <span [ngClass]="'severity-badge severity-' + issue.severity">
+                      {{ getSeverityLabel(issue.severity) }}
+                    </span>
+                  </div>
+                  <p class="issue-description">{{ issue.description }}</p>
+                  <p class="issue-impact">{{ issue.impact }}</p>
+                </div>
+                <div class="expand-icon">
+                  <svg class="w-4 h-4" [class.rotated]="selectedIssue?.id === issue.id" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+              
+              <div class="issue-details" *ngIf="selectedIssue?.id === issue.id">
+                <div class="evidence-section">
+                  <h5 class="evidence-title">Evidence:</h5>
+                  <div class="evidence-list">
+                    <div *ngFor="let evidence of issue.evidence" class="evidence-item">
+                      <div class="evidence-source">{{ evidence.source }}</div>
+                      <div class="evidence-content">{{ evidence.content }}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="recommendations-section">
+                  <h5 class="recommendations-title">Recommendations:</h5>
+                  <ul class="recommendations-list">
+                    <li *ngFor="let rec of issue.recommendations" class="recommendation-item">
+                      <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      {{ rec }}
+                    </li>
+                  </ul>
+                </div>
+                
+                <div class="issue-actions">
+                  <button class="action-btn primary" (click)="generateQuery(issue)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    Generate Query
+                  </button>
+                  <button class="action-btn secondary" (click)="approveIssue(issue)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Approve
+                  </button>
+                  <button class="action-btn tertiary" (click)="markNoIssue(issue)">
+                    Mark No Issue
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar - Evidence Detail -->
+    <div class="sidebar-right">
+      <div class="evidence-card" *ngIf="selectedIssue">
+        <div class="card-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+          </svg>
+          Evidence Detail
+        </div>
+        <div class="card-content">
+          <div class="selected-issue-info">
+            <h4 class="issue-title">{{ selectedIssue.title }}</h4>
+            <span class="category-badge">{{ selectedIssue.category }}</span>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="clinical-evidence">
+            <h5 class="section-title">Clinical Evidence</h5>
+            <div class="evidence-items">
+              <div *ngFor="let evidence of selectedIssue.evidence" class="evidence-detail">
+                <div class="evidence-source-label">{{ evidence.source }}</div>
+                <div class="evidence-content-text">{{ evidence.content }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="financial-impact">
+            <h5 class="section-title">Financial Impact</h5>
+            <div class="impact-box">
+              <div class="impact-content">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+                <span class="impact-text">{{ selectedIssue.impact }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Case Timeline -->
+      <div class="timeline-card">
+        <div class="card-header">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Case Timeline
+        </div>
+        <div class="card-content">
+          <div class="timeline-list">
+            <div *ngFor="let event of caseTimeline" class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-date">{{ event.date }}</div>
+                <div class="timeline-event">{{ event.event }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-message">Error loading case details</div>
+    <button class="retry-btn" (click)="loadCase()">Retry</button>
+  </div>
+</div> 

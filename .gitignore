@@ -4,3 +4,9 @@ node_modules
 ./claims-system
 ./node_modules
 claims-system
+/backend/figma
+./backend/figma
+.DS_Store
+/frontend/build.log
+server.log
+IMPLEMENTATION_GUIDE.md

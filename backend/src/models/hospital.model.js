@@ -75,9 +75,7 @@ const hospitalSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Add indexes
-hospitalSchema.index({ npi: 1 });
-hospitalSchema.index({ licenseNumber: 1 });
+// Add indexes (npi and licenseNumber already have unique indexes)
 hospitalSchema.index({ 'address.state': 1, 'address.city': 1 });
 
 const Hospital = mongoose.model('Hospital', hospitalSchema);

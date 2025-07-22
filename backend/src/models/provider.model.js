@@ -80,8 +80,7 @@ const providerSchema = new mongoose.Schema({
   }
 });
 
-// Indexes for faster lookups
-providerSchema.index({ npi: 1 });
+// Indexes for faster lookups (npi already has unique index)
 providerSchema.index({ userId: 1 });
 providerSchema.index({ specialty: 1 });
 

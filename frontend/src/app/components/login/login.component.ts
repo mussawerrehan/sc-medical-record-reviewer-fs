@@ -1,6 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 // Import our UI components from the correct paths
 import { ButtonComponent } from '../../shared/ui/button/button.component';
@@ -72,14 +74,19 @@ interface Tenant {
             {{ error }}
           </div>
 
-          <ui-button (clickEvent)="handleTenantSelection()" className="w-full">
-            Continue to SmartCycleAI
+          <ui-button 
+            (clickEvent)="handleTenantSelection()" 
+            className="w-full"
+            [disabled]="logging"
+          >
+            {{ logging ? 'Connecting...' : 'Continue to SmartCycleAI' }}
           </ui-button>
           
           <ui-button 
             variant="outline" 
             (clickEvent)="goBackToLogin()" 
             className="w-full"
+            [disabled]="logging"
           >
             Back to Login
           </ui-button>
@@ -134,8 +141,12 @@ interface Tenant {
             {{ error }}
           </div>
 
-          <ui-button (clickEvent)="handleLogin()" className="w-full h-12">
-            Sign In
+          <ui-button 
+            (clickEvent)="handleLogin()" 
+            className="w-full h-12"
+            [disabled]="logging"
+          >
+            {{ logging ? 'Signing In...' : 'Sign In' }}
           </ui-button>
 
           <div class="text-center text-sm text-muted">
@@ -250,6 +261,10 @@ interface Tenant {
       font-weight: var(--font-weight-medium);
       margin-bottom: 0.5rem;
     }
+
+    .medical-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
   `]
 })
 export class LoginComponent implements OnInit {
@@ -260,20 +275,28 @@ export class LoginComponent implements OnInit {
   password: string = '';
   selectedTenant: string = '';
   error: string = '';
+  logging: boolean = false;
 
-  tenants: Tenant[] = [
-    { id: 'sunshine-medical', name: 'Sunshine Medical Center', location: 'Phoenix, AZ' },
-    { id: 'riverside-health', name: 'Riverside Health System', location: 'Richmond, VA' },
-    { id: 'metro-general', name: 'Metro General Hospital', location: 'Denver, CO' }
-  ];
-
+  tenants: Tenant[] = [];
   tenantOptions: SelectOption[] = [];
+  userHospitals: any[] = [];
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.tenantOptions = this.tenants.map(tenant => ({
-      value: tenant.id,
-      label: `${tenant.name} - ${tenant.location}`
-    }));
+    // tenantOptions will be populated after successful login
+
+    // Check if user is already logged in
+    if (this.authService.isLoggedIn()) {
+      const selectedHospital = this.authService.getSelectedHospital();
+      if (selectedHospital) {
+        // User is already authenticated and has hospital selected
+        this.router.navigate(['/dashboard']);
+      }
+    }
   }
 
   handleLogin() {
@@ -282,13 +305,44 @@ export class LoginComponent implements OnInit {
       return;
     }
     
-    // Simulate authentication
-    if (this.username === 'demo' && this.password === 'SmartCyclePass') {
-      this.error = '';
-      this.step = 'tenant';
-    } else {
-      this.error = 'Invalid credentials. Use demo/SmartCyclePass to continue.';
-    }
+    this.logging = true;
+    this.error = '';
+
+    // Try to authenticate with the real AuthService
+    this.authService.login(this.username, this.password).subscribe({
+      next: (response) => {
+        this.logging = false;
+        if (response.accessToken) {
+          // Real authentication successful, set up hospitals and proceed to tenant selection
+          this.userHospitals = response.user.hospitalIds || [];
+          console.log('User hospitals from backend:', this.userHospitals);
+          this.tenantOptions = this.userHospitals.map(hospital => ({
+            value: hospital._id || hospital.id,
+            label: hospital.name
+          }));
+          console.log('Tenant options:', this.tenantOptions);
+          this.step = 'tenant';
+          this.error = '';
+        }
+      },
+      error: (error) => {
+        this.logging = false;
+        console.log('Backend authentication failed, checking demo credentials:', error);
+        
+        // Fall back to demo credentials check for demo purposes
+        if ((this.username === 'demo' || this.username === 'demo@smartcycle.ai') && this.password === 'SmartCyclePass') {
+          // Set up demo hospital options for fallback
+          this.tenantOptions = [
+            { value: 'demo-hospital', label: 'Demo Hospital' },
+            { value: 'test-medical', label: 'Test Medical Center' }
+          ];
+          this.step = 'tenant';
+          this.error = '';
+        } else {
+          this.error = 'Invalid credentials. Use demo/SmartCyclePass to continue.';
+        }
+      }
+    });
   }
 
   handleTenantSelection() {
@@ -296,17 +350,34 @@ export class LoginComponent implements OnInit {
       this.error = 'Please select a facility';
       return;
     }
+
+    this.logging = true;
+    this.error = '';
+
+    // Set the selected hospital and navigate to dashboard
+    this.authService.setSelectedHospital(this.selectedTenant);
+    
+    // Emit login event for the app component to handle
     this.login.emit(this.selectedTenant);
+    
+    // Navigate to dashboard
+    this.router.navigate(['/dashboard']);
+    
+    this.logging = false;
   }
 
   goBackToLogin() {
     this.step = 'login';
     this.error = '';
+    this.username = '';
+    this.password = '';
+    this.logging = false;
   }
 
   onTenantSelectionChange(option: SelectOption | null) {
     if (option) {
       this.selectedTenant = option.value;
+      this.error = '';
     }
   }
 } 

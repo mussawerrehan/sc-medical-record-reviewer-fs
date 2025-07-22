@@ -1,0 +1,7 @@
+<!-- Login Route (No Layout) -->
+<router-outlet *ngIf="isLoginRoute"></router-outlet>
+
+<!-- Protected Routes (With AppLayout) -->
+<app-layout *ngIf="!isLoginRoute">
+  <router-outlet></router-outlet>
+</app-layout> 

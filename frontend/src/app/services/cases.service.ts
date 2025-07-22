@@ -318,6 +318,22 @@ export class CasesService {
     }
   }
 
+  // Upload medical record and create case
+  uploadMedicalRecord(file: File): Observable<CaseResponse> {
+    const formData = new FormData();
+    formData.append('medicalRecord', file);
+    
+    return this.http.post<CaseResponse>(`${this.apiUrl}/upload-medical-record`, formData).pipe(
+      tap(response => {
+        if (response.success) {
+          // Add the new case to the local cases list
+          const currentCases = this.casesSubject.value;
+          this.casesSubject.next([response.data, ...currentCases]);
+        }
+      })
+    );
+  }
+
   // Clear local state
   clearCases(): void {
     this.casesSubject.next([]);
